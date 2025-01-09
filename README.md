@@ -1,2 +1,28 @@
-# Algorank
-Algorank is a competitive coding contest platform designed to provide a seamless and engaging experience for participants and organizers. Featuring real-time leaderboards, secure code execution, and a dynamic contest dashboard, Algorank is the ultimate tool for hosting and participating in coding challenges.
+# Algorank  
+A platform for hosting competitive coding contests. Built to provide a seamless experience for both participants and organizers.
+
+## Features (Planned)
+- User Authentication: Secure login and registration.
+- Contest Dashboard: View active, upcoming, and past contests.
+- Problem Solving: Interactive code editor with syntax highlighting and multiple language support.
+- Leaderboard: Real-time rankings based on problem-solving performance.
+- Code Execution: Secure sandboxed environment for running and evaluating code.
+
+## Tech Stack
+- **Front-End**: React.js
+- **Back-End**: Flask/Django
+- **Database**: PostgreSQL or MongoDB
+- **Code Execution**: Docker for isolated environments
+
+## Folder Structure
+- `client/`: Front-end code for user interface and interactions.
+- `server/`: Back-end logic, APIs, and database integration.
+- `database/`: Database schema and migration scripts.
+- `docker/`: Scripts and files for containerized code execution.
+- `tests/`: Unit and integration tests for front-end and back-end.
+
+## Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/Algorank.git
+   cd Algorank
