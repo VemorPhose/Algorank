@@ -1,7 +1,7 @@
 // src/pages/Contests.js
 
 import React from 'react';
-import Header from '../components/Header';  // Import Header component
+import Header from '../components/Header';
 
 function Contests() {
   return (
