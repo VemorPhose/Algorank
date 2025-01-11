@@ -4,8 +4,9 @@ import React from 'react';
 import Header from '../components/Header';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Footer from '../components/Footer';
 
-function Problemset() {
+function Problems() {
   const [problems, setProblems] = useState([]);
 
   useEffect(() => {
@@ -19,16 +20,17 @@ function Problemset() {
     <div>
       <Header />
       <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h1>Problemset</h1>
-        <p>Your platform for competitive programming.</p>
+        <h1>Problems</h1>
+        {/* <p>Your platform for competitive programming.</p> */}
         {problems.map((problem) => (
           <div key={problem}>
             <Link to={`/problem/${problem}`}>{problem.replace(/-/g, ' ')}</Link>
           </div>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }
 
-export default Problemset;
+export default Problems;

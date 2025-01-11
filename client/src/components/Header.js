@@ -4,40 +4,54 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';  // Import Link for routing
-import './Header.css';
+import { Link } from 'react-router-dom';
 
-function Header(props) {
+function Header() {
   return (
     <Navbar expand="lg" data-bs-theme="dark" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand as={Link} to="/">{props.title}</Navbar.Brand> {/* Home */}
+        {/* Brand stays on the left */}
+        <Navbar.Brand as={Link} to="/">Algorank</Navbar.Brand>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">{props.home}</Nav.Link> {/* Home */}
-            <Nav.Link as={Link} to="/problemset">{props.problemset}</Nav.Link> {/* Problemset */}
-            <Button as={Link} to="/contests" variant="primary" className="contests-button">
-              Contests
-            </Button> {/* Contests */}
+          
+          {/* Push everything to the right */}
+          <Nav className="ms-auto d-flex align-items-center">
+            
+            {/* Problems and Contests Links */}
+            <Nav.Link as={Link} to="/problems">Problems</Nav.Link>
+            <Nav.Link as={Link} to="/contests">Contests</Nav.Link>
+
+            {/* Vertical Divider */}
+            <div style={{ borderLeft: '1px solid #ccc', height: '30px', margin: '0 12px' }}></div>
+
+            {/* Login and Sign Up Buttons */}
+            <Button
+              as={Link}
+              to="/login"
+              variant="primary"
+              className="login-button"
+              style={{ marginLeft: '10px'}}
+            >
+              Login
+            </Button>
+
+            <Button
+              as={Link}
+              to="/signup"
+              variant="outline-primary"
+              className="signup-button"
+              style={{ marginLeft: '15px'}}
+            >
+              Sign Up
+            </Button>
+
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
 }
-
-Header.propTypes = {
-  title: PropTypes.string.isRequired,
-  home: PropTypes.string.isRequired,
-  problemset: PropTypes.string.isRequired,
-};
-
-Header.defaultProps = {
-  title: 'Algorank',
-  home: 'Home',
-  problemset: 'Problemset',
-};
 
 export default Header;

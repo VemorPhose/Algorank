@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 function Contests() {
   return (
@@ -11,6 +12,7 @@ function Contests() {
         <h1>Contests</h1>
         <p>Your platform for competitive programming.</p>
       </div>
+      <Footer />
     </div>
   );
 }
