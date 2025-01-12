@@ -55,8 +55,8 @@ function Problems() {
             <tr>
               <th style={{ width: '20%', textAlign: 'center' }}>Code</th>
               <th style={{ width: '40%', textAlign: 'center' }}>Name</th>
-              <th style={{ width: '20%', textAlign: 'center' }}>Submissions</th>
               <th style={{ width: '20%', textAlign: 'center' }}>Difficulty</th>
+              <th style={{ width: '20%', textAlign: 'center' }}>Submissions</th>
             </tr>
           </thead>
           <tbody>

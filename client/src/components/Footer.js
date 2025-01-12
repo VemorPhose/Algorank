@@ -7,12 +7,12 @@ function Footer() {
       <small className="text-muted">
         © {new Date().getFullYear()} Algorank. Licensed under the{' '}
         <a
-          href="https://opensource.org/licenses/MIT"
+          href="https://www.gnu.org/licenses/gpl-3.0.html"
           target="_blank"
           rel="noopener noreferrer"
           className="text-decoration-none text-primary"
         >
-          MIT License
+          GNU General Public License v3.0
         </a>.
       </small>
     </Navbar>
