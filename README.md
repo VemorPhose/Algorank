@@ -9,7 +9,7 @@ A platform for hosting competitive coding contests. Built to provide a seamless 
 - Code Execution: Secure sandboxed environment for running and evaluating code.
 
 ## Tech Stack
-- **Front-End**: React.js
+- **Front-End**: React.js, TailwindCSS
 - **Back-End**: Flask/Django
 - **Database**: PostgreSQL or MongoDB
 - **Code Execution**: Docker for isolated environments
