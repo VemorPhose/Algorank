@@ -6,14 +6,14 @@ import Footer from '../components/Footer.jsx';
 
 function Contests() {
   return (
-    <div>
-      <Header />
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h1>Contests</h1>
-        <p>Your platform for competitive programming.</p>
-      </div>
-      <Footer />
-    </div>
+    <div className="flex flex-col min-h-screen my-0">
+        <Header/>
+        <main className="flex-1 text-white" style={{ padding: '20px', textAlign: 'center', backgroundColor: '#1D2125' }}>
+            <h1>Contests</h1>
+            <p>Coming Soon!</p>
+        </main>
+        <Footer/>
+     </div>
   );
 }
 

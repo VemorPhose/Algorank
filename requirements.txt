@@ -1,4 +1,3 @@
-npm i react-bootstrap bootstrap
 npm i react-router-dom
 npm i react-markdown
 npm i remark-gfm
@@ -6,3 +5,5 @@ npm i rehype-pretty-code
 
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
+
+npm install vite-plugin-static-copy --save-dev
