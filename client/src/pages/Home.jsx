@@ -1,8 +1,8 @@
 // src/pages/Home.js
 
 import React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/Header.jsx';
+import Footer from '../components/Footer.jsx';
 
 function Home() {
   return (

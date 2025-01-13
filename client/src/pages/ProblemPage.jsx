@@ -3,7 +3,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import Header from '../components/Header';
+import Header from '../components/Header.jsx';
 
 function ProblemPage() {
   const { problemId } = useParams();  // Grabs problem name from URL

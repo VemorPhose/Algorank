@@ -4,10 +4,10 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Problems from './pages/Problems';
-import ProblemPage from './pages/ProblemPage';
-import Contests from './pages/Contests';
+import Home from './pages/Home.jsx';
+import Problems from './pages/Problems.jsx';
+import ProblemPage from './pages/ProblemPage.jsx';
+import Contests from './pages/Contests.jsx';
 
 function App() {
   return (
