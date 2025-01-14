@@ -7,7 +7,7 @@ function Footer() {
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"/>
       </svg>
         
-        <p className="pt-1"> © {new Date().getFullYear()} AlgoRank - All right reserved
+        <p className="pt-3"> © {new Date().getFullYear()} AlgoRank - All right reserved
           <br />
           Licensed under the{' '}
             <a
