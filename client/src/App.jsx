@@ -8,6 +8,8 @@ import Home from './pages/Home.jsx';
 import Problems from './pages/Problems.jsx';
 import ProblemPage from './pages/ProblemPage.jsx';
 import Contests from './pages/Contests.jsx';
+import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/problems" element={<Problems />} />
         <Route path="/contests" element={<Contests />} />
         <Route path="/problem/:problemId" element={<ProblemPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
