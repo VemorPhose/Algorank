@@ -1,6 +1,6 @@
   function Footer() {
     return (
-      <footer className="footer bg-neutral text-neutral-content items-center p-1 w-full">
+      <footer className="flex flex-col justify-around md:flex-row footer bg-neutral text-neutral-content items-center p-4 w-full">
         <aside className="grid-flow-col items-center">
           <svg
             className="w-6 h-6 text-gray-800 dark:text-white"
@@ -19,7 +19,7 @@
               d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"
             />
           </svg>
-          <p className="pt-3 text-sm">
+          <p className="pt-2 text-sm">
             © {new Date().getFullYear()} AlgoRank - All rights reserved
             <br />
             Licensed under the{" "}

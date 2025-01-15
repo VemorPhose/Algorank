@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <div className="flex flex-row justify-between items-center w-full h-16 bg-dark px-4"> {/* Added padding to prevent overflow */}
+    <div className="flex flex-row justify-around items-center w-full h-16 bg-dark px-10"> {/* Added padding to prevent overflow */}
       <div className="flex flex-col items-center">
         <Link
           to="/"
@@ -11,6 +11,8 @@ function Header() {
           AlgoRank
         </Link>
       </div>
+      <div></div>
+      <div></div>
       <div className="flex flex-row items-center">
         <Link to="/problems" className="text-white text-decoration-none mx-2">
           Problems
