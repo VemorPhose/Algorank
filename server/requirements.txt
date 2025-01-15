@@ -1,0 +1,2 @@
+npm i express pg cors dotenv
+npm i --save-dev nodemon
