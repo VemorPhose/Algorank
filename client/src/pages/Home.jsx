@@ -3,15 +3,15 @@ import Footer from "../components/Footer.jsx";
 
 function Home() {
   return (
-    <div>
+    <div
+      className="flex flex-col justify-between min-w-full bg-contain bg-top min-h-screen"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1517134191118-9d595e4c8c2b?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+      }}
+    >
       <Header />
-      <div
-        className="flex items-center justify-center min-h-screen bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1517134191118-9d595e4c8c2b?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-        }}
-      >
+      <div className="flex items-center justify-center">
         <div className="bg-black bg-opacity-50 p-6 rounded-lg text-center">
           <h1 className="text-5xl font-bold text-white">Welcome to AlgoRank</h1>
           <p className="mt-4 text-lg text-gray-300">

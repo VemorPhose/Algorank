@@ -3,9 +3,10 @@ npm i react-markdown
 npm i remark-gfm
 npm i rehype-pretty-code
 
-npm install -D tailwindcss postcss autoprefixer
+npm i -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 
-npm install vite-plugin-static-copy --save-dev
+npm i vite-plugin-static-copy --save-dev
 
-npm install firebase
+npm i firebase
+npm i daisyui
