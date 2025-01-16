@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  # Your existing services here...
+
+  judge0:
+    image: judge0/judge0:1.13.0
+    volumes:
+      - ./judge0/judge0-conf.env:/judge0.conf
+    ports:
+      - "2358:2358"
+    privileged: true
+    depends_on:
+      - judge0-db
+      - judge0-redis
+    networks:
+      - algorank-network
+
+  judge0-worker:
+    image: judge0/judge0:1.13.0
+    command: ["./scripts/workers"]
+    volumes:
+      - ./judge0/judge0-conf.env:/judge0.conf
+    privileged: true
+    depends_on:
+      - judge0-db
+      - judge0-redis
+    networks:
+      - algorank-network
+
+  judge0-db:
+    image: postgres:13.0
+    env_file: ./judge0/postgres.env
+    volumes:
+      - judge0-postgres-data:/var/lib/postgresql/data/
+    networks:
+      - algorank-network
+
+  judge0-redis:
+    image: redis:6.0
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly yes'
+    ]
+    volumes:
+      - judge0-redis-data:/data
+    networks:
+      - algorank-network
+
+volumes:
+  judge0-postgres-data:
+  judge0-redis-data:
+
+networks:
+  algorank-network:
+    driver: bridge
