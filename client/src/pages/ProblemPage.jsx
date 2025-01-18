@@ -1,5 +1,3 @@
-// src/pages/ProblemPage.jsx
-
 import { useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -14,12 +12,47 @@ import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 function ProblemPage() {
   const { problemId } = useParams();
   const [content, setContent] = useState('Loading...');
-  const [code, setCode] = useState('// Start coding here...');
+  const [codeState, setCodeState] = useState({
+    cpp: '',
+    python: '',
+    java: ''
+  });
   const [language, setLanguage] = useState('cpp');
   const dividerRef = useRef(null);
   const leftPanelRef = useRef(null);
   const rightPanelRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [boilerplatesLoaded, setBoilerplatesLoaded] = useState(false);
+
+  // Load boilerplates
+  useEffect(() => {
+    const loadBoilerplates = async () => {
+      try {
+        const boilerplates = await Promise.all([
+          fetch('/src/boilerplates/boilerplate.cpp').then(res => res.text()),
+          fetch('/src/boilerplates/boilerplate.py').then(res => res.text()),
+          fetch('/src/boilerplates/boilerplate.java').then(res => res.text())
+        ]);
+
+        setCodeState({
+          cpp: boilerplates[0],
+          python: boilerplates[1],
+          java: boilerplates[2]
+        });
+        setBoilerplatesLoaded(true);
+      } catch (error) {
+        console.error("Error loading boilerplates:", error);
+        // Set default boilerplates if loading fails
+        setCodeState({
+          cpp: '// C++ code here...',
+          python: '# Python code here...',
+          java: '// Java code here...'
+        });
+      }
+    };
+
+    loadBoilerplates();
+  }, []);
 
   useEffect(() => {
     const fetchMarkdown = async () => {
@@ -47,11 +80,17 @@ function ProblemPage() {
         return python();
       case 'java':
         return java();
-      // case 'c':
       case 'cpp':
       default:
         return cpp();
     }
+  };
+
+  const handleCodeChange = (value) => {
+    setCodeState(prev => ({
+      ...prev,
+      [language]: value
+    }));
   };
 
   const startDragging = () => setIsDragging(true);
@@ -76,7 +115,7 @@ function ProblemPage() {
   }, [isDragging]);
 
   const handleSubmit = async () => {
-    const blob = new Blob([code], { type: 'text/plain' });
+    const blob = new Blob([codeState[language]], { type: 'text/plain' });
     const fileExtension = language === 'python' ? 'py' : language === 'java' ? 'java' : 'cpp';
     const formData = new FormData();
     formData.append('file', blob, `${problemId}.${fileExtension}`);
@@ -94,6 +133,10 @@ function ProblemPage() {
       alert('Failed to submit code.');
     }
   };
+
+  if (!boilerplatesLoaded) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col min-h-screen my-0">
@@ -126,7 +169,6 @@ function ProblemPage() {
               onChange={handleLanguageChange}
               className="p-2 rounded bg-gray-800 text-white border border-gray-600"
             >
-              {/* <option value="c">C</option> */}
               <option value="cpp">C++</option>
               <option value="python">Python</option>
               <option value="java">Java</option>
@@ -134,10 +176,10 @@ function ProblemPage() {
           </div>
 
           <CodeMirror
-            value={code}
+            value={codeState[language]}
             height="555px"
             extensions={[getLanguageExtension()]}
-            onChange={(value) => setCode(value)}
+            onChange={handleCodeChange}
             theme={vscodeDark}
             className="rounded shadow-sm"
           />
