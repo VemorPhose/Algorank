@@ -44,6 +44,12 @@ async function initDB() {
         memory_usage INTEGER,
         FOREIGN KEY (submission_id) REFERENCES submissions(submission_id)
       );
+
+      INSERT INTO problems (problem_id, title, difficulty) VALUES
+      ('2SUM', 'Sum of Two Numbers', 'Easy'),
+      ('FIBO', 'Fibonacci Sequence', 'Easy')
+      ON CONFLICT (problem_id) DO NOTHING;
+
     `);
     console.log("Database tables initialized");
   } catch (err) {
