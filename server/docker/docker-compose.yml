@@ -1,0 +1,39 @@
+services:
+  server:
+    image: judge0/api:1.5.0
+    volumes:
+      - ./judge0.conf:/judge0-api.conf:ro
+    ports:
+      - "2358:2358"
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=host.docker.internal
+      - POSTGRES_DB=algorank_db
+      - POSTGRES_USER=algorank_user
+      - POSTGRES_PASSWORD=asdfghjkl
+      - VIRTUAL_HOST=judge0-api
+      - VIRTUAL_PORT=2358
+    privileged: true
+    networks:
+      - algorank-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:6.2-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - algorank-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+
+networks:
+  algorank-network:
+    driver: bridge

@@ -1,14 +1,27 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../database');
+const pool = require('../config/db');
 
-const Submission = sequelize.define('Submission', {
-  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-  userId: { type: DataTypes.INTEGER, allowNull: false },
-  problemCode: { type: DataTypes.STRING, allowNull: false },
-  status: { type: DataTypes.STRING, allowNull: false },
-  language: { type: DataTypes.STRING, allowNull: false },
-  submissionFile: { type: DataTypes.STRING, allowNull: false },
-  results: { type: DataTypes.JSON, allowNull: false },  // Stores test case-wise results
-}, { timestamps: true });
+class Submission {
+  static async create(submissionData) {
+    const { submissionId, problemId, userId, code, language } = submissionData;
+    await pool.query(
+      'INSERT INTO submissions (submission_id, problem_id, user_id, code, language) VALUES ($1, $2, $3, $4, $5)',
+      [submissionId, problemId, userId, code, language]
+    );
+  }
+
+  static async updateStatus(submissionId, status) {
+    await pool.query(
+      'UPDATE submissions SET status = $1 WHERE submission_id = $2',
+      [status, submissionId]
+    );
+  }
+
+  static async saveTestResult(submissionId, testNumber, status, time, memory) {
+    await pool.query(
+      'INSERT INTO test_case_results (submission_id, test_case_number, status, execution_time, memory_usage) VALUES ($1, $2, $3, $4, $5)',
+      [submissionId, testNumber, status, time, memory]
+    );
+  }
+}
 
 module.exports = Submission;
