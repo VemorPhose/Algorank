@@ -6,30 +6,40 @@ import { Link } from 'react-router-dom';
 function Problems() {
   const [problems, setProblems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const problemFiles = [];
+    const fetchProblems = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/problems');
+        const data = await response.json();
+        setProblems(data);
+      } catch (error) {
+        console.error('Error fetching problems:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Dynamically import all .md files in the ../problems directory
-    const files = import.meta.glob('../problems/*.md');
-
-    for (const path in files) {
-      problemFiles.push({
-        code: path.split('/').pop().replace('.md', '').replace(/-/g, ' '),
-        name: path.split('/').pop().replace('.md', '').replace(/-/g, ' '),
-        difficulty: 'Easy',  // Placeholder
-        submissions: Math.floor(Math.random() * 1000),  // Random for now
-      });
-    }
-
-    setProblems(problemFiles);
+    fetchProblems();
   }, []);
 
-
   const filteredProblems = problems.filter((problem) =>
-    problem.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    problem.name.toLowerCase().includes(searchQuery.toLowerCase())
+    problem.problem_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    problem.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen my-0">
+        <Header />
+        <main className="flex-1 bg-gray-900">
+          <div className="text-white text-center py-10">Loading...</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen my-0">
@@ -50,18 +60,20 @@ function Problems() {
               <th style={{ width: '20%', textAlign: 'center' }}>Code</th>
               <th style={{ width: '40%', textAlign: 'center' }}>Name</th>
               <th style={{ width: '20%', textAlign: 'center' }}>Difficulty</th>
-              <th style={{ width: '20%', textAlign: 'center' }}>Submissions</th>
+              <th style={{ width: '20%', textAlign: 'center' }}>Solved</th>
             </tr>
           </thead>
           <tbody>
             {filteredProblems.map((problem) => (
-              <tr key={problem.code}>
-                <td style={{ textAlign: 'center' }}>{problem.code}</td>
+              <tr key={problem.problem_id}>
+                <td style={{ textAlign: 'center' }}>{problem.problem_id}</td>
                 <td style={{ textAlign: 'center' }}>
-                  <Link to={`/problem/${problem.code}`} style={{ color: '#4da6ff' }}>{problem.name}</Link>
+                  <Link to={`/problem/${problem.problem_id}`} style={{ color: '#4da6ff' }}>
+                    {problem.title}
+                  </Link>
                 </td>
                 <td style={{ textAlign: 'center' }}>{problem.difficulty}</td>
-                <td style={{ textAlign: 'center' }}>{problem.submissions}</td>
+                <td style={{ textAlign: 'center' }}>{problem.solved_count}</td>
               </tr>
             ))}
           </tbody>
@@ -73,33 +85,3 @@ function Problems() {
 }
 
 export default Problems;
-
-{/* <Form.Control
-          type="text"
-          placeholder="Search by Code or Name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ marginBottom: '20px', width: '50%', marginLeft: 'auto', marginRight: 'auto' }}
-        />
-        <Table striped hover variant="dark" responsive style={{ borderRadius: '8px', overflow: 'hidden' }}>
-          <thead>
-            <tr>
-              <th style={{ width: '20%', textAlign: 'center' }}>Code</th>
-              <th style={{ width: '40%', textAlign: 'center' }}>Name</th>
-              <th style={{ width: '20%', textAlign: 'center' }}>Difficulty</th>
-              <th style={{ width: '20%', textAlign: 'center' }}>Submissions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProblems.map((problem) => (
-              <tr key={problem.code}>
-                <td style={{ textAlign: 'center' }}>{problem.code}</td>
-                <td style={{ textAlign: 'center' }}>
-                  <Link to={`/problem/${problem.code}`} style={{ color: '#4da6ff' }}>{problem.name}</Link>
-                </td>
-                <td style={{ textAlign: 'center' }}>{problem.difficulty}</td>
-                <td style={{ textAlign: 'center' }}>{problem.submissions}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table> */}
