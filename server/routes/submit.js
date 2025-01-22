@@ -1,12 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Submission = require('../models/submission');
-const Problem = require('../models/problem');
-const axios = require('axios');
-const fs = require('fs').promises;
-const path = require('path');
+const Submission = require("../models/submission");
+const Problem = require("../models/problem");
+const axios = require("axios");
+const fs = require("fs").promises;
+const path = require("path");
 
-const JUDGE0_BASE_URL = 'http://localhost:2358';
+const JUDGE0_BASE_URL = "http://localhost:2358";
 const SUBMISSION_CHECK_INTERVAL = 1000; // 1 second
 const MAX_CHECK_ATTEMPTS = 10;
 
@@ -15,39 +15,49 @@ async function waitForSubmissionResult(token) {
   let attempts = 0;
   while (attempts < MAX_CHECK_ATTEMPTS) {
     try {
-      const response = await axios.get(`${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=false`);
-      
+      const response = await axios.get(
+        `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=false`
+      );
+
       // If the submission is finished
       if (response.data.status.id !== 1 && response.data.status.id !== 2) {
         return response.data;
       }
-      
+
       // Wait before next check
-      await new Promise(resolve => setTimeout(resolve, SUBMISSION_CHECK_INTERVAL));
+      await new Promise((resolve) =>
+        setTimeout(resolve, SUBMISSION_CHECK_INTERVAL)
+      );
       attempts++;
     } catch (error) {
-      console.error('Error checking submission status:', error);
+      console.error("Error checking submission status:", error);
       throw error;
     }
   }
-  throw new Error('Submission timeout');
+  throw new Error("Submission timeout");
 }
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const { problemId, userId, submissionId, code, language } = req.body;
 
   if (!problemId || !userId || !code || !language) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
     // Create submission record
-    await Submission.create({ submissionId, problemId, userId, code, language });
+    await Submission.create({
+      submissionId,
+      problemId,
+      userId,
+      code,
+      language,
+    });
 
     // Verify test cases directory exists
-    const testCasesDir = path.join(__dirname, '..', 'testcases', problemId);
-    const inputsDir = path.join(testCasesDir, 'inputs');
-    
+    const testCasesDir = path.join(__dirname, "..", "testcases", problemId);
+    const inputsDir = path.join(testCasesDir, "inputs");
+
     try {
       await fs.access(inputsDir);
     } catch (error) {
@@ -56,96 +66,113 @@ router.post('/', async (req, res) => {
 
     const inputFiles = await fs.readdir(inputsDir);
     if (inputFiles.length === 0) {
-      throw new Error('No test cases found');
+      throw new Error("No test cases found");
     }
 
     // Process each test case
-    const results = await Promise.all(inputFiles.map(async (inputFile) => {
-      const testCaseNumber = parseInt(inputFile.replace('input', '').replace('.txt', ''));
-      const inputPath = path.join(inputsDir, `input${testCaseNumber}.txt`);
-      const outputPath = path.join(testCasesDir, 'outputs', `output${testCaseNumber}.txt`);
-
-      try {
-        const [input, expectedOutput] = await Promise.all([
-          fs.readFile(inputPath, 'utf8'),
-          fs.readFile(outputPath, 'utf8')
-        ]);
-
-        // Create Judge0 submission
-        const submissionResponse = await axios.post(`${JUDGE0_BASE_URL}/submissions`, {
-          source_code: code,
-          language_id: getLanguageId(language),
-          stdin: input.trim(),
-          expected_output: expectedOutput.trim(),
-          cpu_time_limit: 2,
-          memory_limit: 128000
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        // Get submission token and wait for result
-        const token = submissionResponse.data.token;
-        const result = await waitForSubmissionResult(token);
-
-        // Process result
-        const status = result.status.id === 3; // 3 = Accepted
-        const executionTime = result.time || 0;
-        const memoryUsed = result.memory || 0;
-
-        // Save test case result
-        await Submission.saveTestResult(
-          submissionId,
-          testCaseNumber,
-          status,
-          executionTime,
-          memoryUsed
+    const results = await Promise.all(
+      inputFiles.map(async (inputFile) => {
+        const testCaseNumber = parseInt(
+          inputFile.replace("input", "").replace(".txt", "")
+        );
+        const inputPath = path.join(inputsDir, `input${testCaseNumber}.txt`);
+        const outputPath = path.join(
+          testCasesDir,
+          "outputs",
+          `output${testCaseNumber}.txt`
         );
 
-        return {
-          passed: status,
-          executionTime,
-          memoryUsed,
-          error: status ? null : result.status.description
-        };
+        try {
+          const [input, expectedOutput] = await Promise.all([
+            fs.readFile(inputPath, "utf8"),
+            fs.readFile(outputPath, "utf8"),
+          ]);
 
-      } catch (error) {
-        console.error(`Test case ${testCaseNumber} error:`, error.message);
-        if (error.code === 'ENOENT') {
-          throw new Error(`Test case file not found: ${error.path}`);
+          console.log(input);
+          console.log(expectedOutput);
+
+          // Create Judge0 submission
+          const submissionResponse = await axios.post(
+            `${JUDGE0_BASE_URL}/submissions`,
+            {
+              source_code: code,
+              language_id: getLanguageId(language),
+              stdin: input.trim(),
+              expected_output: expectedOutput.trim(),
+              cpu_time_limit: 2,
+              memory_limit: 128000,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          // Get submission token and wait for result
+          const token = submissionResponse.data.token;
+          const result = await waitForSubmissionResult(token);
+
+          console.log(result);
+
+          // Process result
+          const status = result.status.id === 3; // 3 = Accepted
+          const executionTime = Math.round(
+            parseFloat(result.time || "0") * 1000
+          ); // Convert to milliseconds
+          const memoryUsed = result.memory || 0;
+
+          // Save test case result
+          await Submission.saveTestResult(
+            submissionId,
+            testCaseNumber,
+            status,
+            executionTime,
+            memoryUsed
+          );
+
+          return {
+            passed: status,
+            executionTime,
+            memoryUsed,
+            error: status ? null : result.status.description,
+          };
+        } catch (error) {
+          console.error(`Test case ${testCaseNumber} error:`, error.message);
+          if (error.code === "ENOENT") {
+            throw new Error(`Test case file not found: ${error.path}`);
+          }
+          return {
+            passed: false,
+            executionTime: 0,
+            memoryUsed: 0,
+            error: error.message,
+          };
         }
-        return {
-          passed: false,
-          executionTime: 0,
-          memoryUsed: 0,
-          error: error.message
-        };
-      }
-    }));
+      })
+    );
 
     // Calculate final results
-    const finalStatus = results.every(r => r.passed);
+    const finalStatus = results.every((r) => r.passed);
     await Submission.updateStatus(submissionId, finalStatus);
 
     // Send detailed response
     res.json({
       status: finalStatus,
       submissionId,
-      testCasesPassed: results.filter(r => r.passed).length,
+      testCasesPassed: results.filter((r) => r.passed).length,
       totalTestCases: results.length,
       testCaseResults: results.map((result, index) => ({
         testCase: index + 1,
-        ...result
-      }))
+        ...result,
+      })),
     });
-
   } catch (error) {
-    console.error('Submission error:', error);
-    res.status(500).json({ 
-      error: 'Submission failed',
+    console.error("Submission error:", error);
+    res.status(500).json({
+      error: "Submission failed",
       details: error.message,
-      path: error.path
+      path: error.path,
     });
   }
 });
@@ -153,9 +180,9 @@ router.post('/', async (req, res) => {
 function getLanguageId(language) {
   // Updated language IDs based on Judge0 CE
   const languages = {
-    cpp: 54,    // C++ (GCC 9.2.0)
+    cpp: 54, // C++ (GCC 9.2.0)
     python: 71, // Python (3.8.1)
-    java: 62    // Java (OpenJDK 13.0.1)
+    java: 62, // Java (OpenJDK 13.0.1)
   };
   return languages[language] || 54;
 }

@@ -157,6 +157,8 @@ function ProblemPage() {
       status: false,
     };
 
+    console.log(submissionData);
+
     try {
       const response = await fetch("http://localhost:5000/api/submit", {
         method: "POST",
