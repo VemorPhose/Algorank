@@ -45,6 +45,14 @@ async function initDB() {
         FOREIGN KEY (submission_id) REFERENCES submissions(submission_id)
       );
 
+      CREATE TABLE IF NOT EXISTS solved (
+        problem_id VARCHAR(255) NOT NULL,
+        user_id VARCHAR(255) NOT NULL,
+        solved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (problem_id, user_id),
+        FOREIGN KEY (problem_id) REFERENCES problems(problem_id)
+      );
+
       INSERT INTO problems (problem_id, title, difficulty) VALUES
       ('2SUM', 'Sum of Two Numbers', 'Easy'),
       ('FIBO', 'Fibonacci Sequence', 'Easy')

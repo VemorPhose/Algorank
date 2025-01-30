@@ -5,6 +5,8 @@ const Problem = require("../models/problem");
 const axios = require("axios");
 const fs = require("fs").promises;
 const path = require("path");
+const { isFloat32Array } = require("util/types");
+const pool = require("../config/db");
 
 const JUDGE0_BASE_URL = "http://localhost:2358";
 const SUBMISSION_CHECK_INTERVAL = 1000; // 1 second
@@ -130,6 +132,29 @@ router.post("/", async (req, res) => {
             executionTime,
             memoryUsed
           );
+
+          if (status) { // if submission was accepted
+            try {
+              // Check if this was first time solving
+              const solved_count = await pool.query(
+                'SELECT COUNT(*) FROM solved WHERE problem_id = $1 AND user_id = $2',
+                [problemId, userId]
+              );
+              
+              if (solved_count.rows[0].count === '0') {
+                await Problem.incrementSolvedCount(problemId);
+              }
+
+              await pool.query(
+                `INSERT INTO solved (problem_id, user_id) 
+                 VALUES ($1, $2) 
+                 ON CONFLICT (problem_id, user_id) DO NOTHING`,
+                [problemId, userId]
+              );
+            } catch (error) {
+              console.error('Error updating solved status:', error);
+            }
+          }
 
           return {
             passed: status,

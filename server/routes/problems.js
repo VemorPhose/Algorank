@@ -3,11 +3,20 @@ const router = express.Router();
 const Problem = require('../models/problem');
 const fs = require('fs').promises;
 const path = require('path');
+const pool = require('../config/db');
+
 
 router.get('/', async (req, res) => {
   try {
-    const problems = await Problem.getAll();
-    res.json(problems);
+    const { userId } = req.query;
+    const problems = await pool.query(`
+      SELECT p.*, 
+             CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END as is_solved
+      FROM problems p
+      LEFT JOIN solved s ON p.problem_id = s.problem_id AND s.user_id = $1`,
+      [userId || '']
+    );
+    res.json(problems.rows);
   } catch (error) {
     console.error('Error fetching problems:', error);
     res.status(500).json({ error: 'Failed to fetch problems' });
