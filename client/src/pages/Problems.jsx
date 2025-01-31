@@ -37,7 +37,7 @@ function Problems() {
     return (
       <div className="flex flex-col min-h-screen my-0">
         <Header />
-        <main className="flex-1 bg-gray-900">
+        <main className="flex-1" style={{ backgroundColor: "#1D2125" }}>
           <div className="text-white text-center py-10">Loading...</div>
         </main>
         <Footer />

@@ -24,6 +24,7 @@ function ProblemPage() {
   });
   const [language, setLanguage] = useState("cpp");
   const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dividerRef = useRef(null);
   const leftPanelRef = useRef(null);
   const rightPanelRef = useRef(null);
@@ -157,8 +158,9 @@ function ProblemPage() {
       status: false,
     };
 
-    console.log(submissionData);
+    // console.log(submissionData);
 
+    setIsSubmitting(true);
     try {
       const response = await fetch("http://localhost:5000/api/submit", {
         method: "POST",
@@ -173,6 +175,8 @@ function ProblemPage() {
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Failed to submit code");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -184,11 +188,14 @@ function ProblemPage() {
     <div className="flex flex-col min-h-screen my-0">
       <Header />
 
-      <main className="flex flex-1 bg-gray-900 text-white px-10 py-6">
+      <main
+        className="flex flex-1 text-white px-10 py-0"
+        style={{ backgroundColor: "#1D2125" }}
+      >
         {/* Left Panel - Problem Description */}
         <div
           ref={leftPanelRef}
-          className="p-4 overflow-y-auto border-r border-gray-700"
+          className="p-4 my-6 overflow-y-auto"
           style={{ width: "50%" }}
         >
           <h2 className="text-2xl font-bold mb-4">
@@ -201,12 +208,19 @@ function ProblemPage() {
         <div
           ref={dividerRef}
           onMouseDown={startDragging}
-          className="w-1 bg-dark cursor-col-resize"
-          style={{ cursor: "col-resize" }}
-        />
+          className="w-2 bg-dark cursor-col-resize flex flex-col justify-center"
+          style={{ cursor: "col-resize", lineHeight: "12px" }}
+        >
+          ::
+          <br />
+          ::
+          <br />
+          ::
+          <br />
+        </div>
 
         {/* Right Panel - IDE */}
-        <div ref={rightPanelRef} className="p-4" style={{ width: "50%" }}>
+        <div ref={rightPanelRef} className="p-4 my-6" style={{ width: "50%" }}>
           <div className="mb-4">
             <label
               htmlFor="language"
@@ -242,33 +256,35 @@ function ProblemPage() {
             }}
           />
 
-          <button
-            onClick={handleSubmit}
-            className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
-          >
-            Submit
-          </button>
-          {submissionStatus && (
-            <div
-              className={`submission-status ${
-                typeof submissionStatus === "string"
-                  ? submissionStatus.toLowerCase()
-                  : submissionStatus === true
-                  ? "accepted"
-                  : "wrong"
-              }`}
+          <div className="flex flex-row justify-between width-full">
+            <button
+              onClick={handleSubmit}
+              className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
+              disabled={isSubmitting}
             >
-              {typeof submissionStatus === "string"
-                ? submissionStatus
-                : submissionStatus === true
-                ? "Accepted"
-                : "Wrong Answer"}
-            </div>
-          )}
+              Submit
+            </button>
+            {(isSubmitting || submissionStatus !== null) && (
+              <div
+                className={`mt-4 px-4 py-2 rounded ${
+                  isSubmitting
+                    ? "bg-gray-700 text-white"
+                    : submissionStatus
+                    ? "bg-green-600 text-white"
+                    : "bg-red-600 text-white"
+                }`}
+              >
+                {isSubmitting
+                  ? "Submission queued..."
+                  : submissionStatus
+                  ? "Accepted"
+                  : "Wrong Answer"}
+              </div>
+            )}
+          </div>
+          <div className="testCaseResults my-6"></div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
