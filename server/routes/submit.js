@@ -18,7 +18,7 @@ async function waitForSubmissionResult(token) {
   while (attempts < MAX_CHECK_ATTEMPTS) {
     try {
       const response = await axios.get(
-        `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=false`
+        `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=true`
       );
 
       // If the submission is finished
@@ -157,10 +157,11 @@ router.post("/", async (req, res) => {
           }
 
           return {
+            number: testCaseNumber,
             passed: status,
             executionTime,
             memoryUsed,
-            error: status ? null : result.status.description,
+            verdict: result.status.description
           };
         } catch (error) {
           console.error(`Test case ${testCaseNumber} error:`, error.message);
@@ -187,6 +188,7 @@ router.post("/", async (req, res) => {
       submissionId,
       testCasesPassed: results.filter((r) => r.passed).length,
       totalTestCases: results.length,
+      testCases: results,
       testCaseResults: results.map((result, index) => ({
         testCase: index + 1,
         ...result,

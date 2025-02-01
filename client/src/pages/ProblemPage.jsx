@@ -25,6 +25,7 @@ function ProblemPage() {
   const [language, setLanguage] = useState("cpp");
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [testResults, setTestResults] = useState([]);
   const dividerRef = useRef(null);
   const leftPanelRef = useRef(null);
   const rightPanelRef = useRef(null);
@@ -172,6 +173,7 @@ function ProblemPage() {
 
       const result = await response.json();
       setSubmissionStatus(result.status);
+      setTestResults(result.testCases || []);
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Failed to submit code");
@@ -256,7 +258,7 @@ function ProblemPage() {
             }}
           />
 
-          <div className="flex flex-row justify-between width-full">
+          <div className="mb-6 flex flex-row justify-between width-full">
             <button
               onClick={handleSubmit}
               className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
@@ -282,7 +284,26 @@ function ProblemPage() {
               </div>
             )}
           </div>
-          <div className="testCaseResults my-6"></div>
+          {submissionStatus !== null && (
+            <div className="testCaseResults flex flex-col gap-2 width-full">
+              {testResults.map((test) => (
+                <div
+                  key={test.number}
+                  className="flex flex-row justify-between items-center p-3 rounded bg-gray-800"
+                >
+                  <div className="w-1/4">Test Case {test.number}</div>
+                  <div
+                    className={`w-1/2 ${
+                      test.verdict === "Accepted" ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {test.verdict}
+                  </div>
+                  <div className="w-1/4 text-right">{test.executionTime}ms</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
