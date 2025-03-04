@@ -12,41 +12,53 @@ const JUDGE0_BASE_URL = "http://localhost:2358";
 const SUBMISSION_CHECK_INTERVAL = 1000; // 1 second
 const MAX_CHECK_ATTEMPTS = 10;
 
-// Helper function to wait for Judge0 submission result
-async function waitForSubmissionResult(token) {
+// Add base64 encoding helper function at the top
+function encodeBase64(str) {
+  return Buffer.from(str).toString('base64');
+}
+
+// Helper function to wait for Judge0 submission batch results
+async function waitForBatchResults(tokens) {
   let attempts = 0;
   while (attempts < MAX_CHECK_ATTEMPTS) {
     try {
       const response = await axios.get(
-        `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=true`
+        `${JUDGE0_BASE_URL}/submissions/batch`,
+        {
+          params: {
+            tokens: tokens.join(','),
+            base64_encoded: true,
+            fields: 'token,status,time,memory,stderr,compile_output,message'
+          }
+        }
       );
 
-      // If the submission is finished
-      if (response.data.status.id !== 1 && response.data.status.id !== 2) {
-        return response.data;
+      if (response.data.submissions.every(sub => 
+        sub.status.id !== 1 && sub.status.id !== 2)) {
+        return response.data.submissions;
       }
 
-      // Wait before next check
-      await new Promise((resolve) =>
-        setTimeout(resolve, SUBMISSION_CHECK_INTERVAL)
-      );
+      await new Promise(resolve => setTimeout(resolve, SUBMISSION_CHECK_INTERVAL));
       attempts++;
     } catch (error) {
-      console.error("Error checking submission status:", error);
+      console.error("Error checking batch status:", error);
       throw error;
     }
   }
-  throw new Error("Submission timeout");
+  throw new Error("Batch submission timeout");
 }
 
+// Update the main route handler
 router.post("/", async (req, res) => {
   const { problemId, userId, submissionId, code, language } = req.body;
 
   if (!problemId || !userId || !code || !language) {
+    console.log("Missing fields:", { problemId, userId, code, language });
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
+    console.log("Received submission:", { problemId, userId, submissionId, language });
     // Create submission record
     await Submission.create({
       submissionId,
@@ -79,135 +91,100 @@ router.post("/", async (req, res) => {
       throw new Error("No test cases found");
     }
 
-    // Process each test case
-    const results = await Promise.all(
+    // Update the submissions array creation
+    const submissions = await Promise.all(
       inputFiles.map(async (inputFile) => {
-        const testCaseNumber = parseInt(
-          inputFile.replace("input", "").replace(".txt", "")
-        );
-        const inputPath = path.join(inputsDir, `input${testCaseNumber}.txt`);
-        const outputPath = path.join(
-          testCasesDir,
-          "outputs",
-          `output${testCaseNumber}.txt`
-        );
+        const testCaseNumber = parseInt(inputFile.replace("input", "").replace(".txt", ""));
+        const [input, expectedOutput] = await Promise.all([
+          fs.readFile(path.join(inputsDir, `input${testCaseNumber}.txt`), "utf8"),
+          fs.readFile(path.join(testCasesDir, "outputs", `output${testCaseNumber}.txt`), "utf8")
+        ]);
 
-        try {
-          const [input, expectedOutput] = await Promise.all([
-            fs.readFile(inputPath, "utf8"),
-            fs.readFile(outputPath, "utf8"),
-          ]);
-
-          console.log(input);
-          console.log(expectedOutput);
-
-          // Create Judge0 submission
-          const submissionResponse = await axios.post(
-            `${JUDGE0_BASE_URL}/submissions`,
-            {
-              source_code: code,
-              language_id: getLanguageId(language),
-              stdin: input.trim(),
-              expected_output: expectedOutput.trim(),
-              cpu_time_limit: 2,
-              memory_limit: 128000,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          // Get submission token and wait for result
-          const token = submissionResponse.data.token;
-          const result = await waitForSubmissionResult(token);
-
-          console.log(result);
-
-          // Process result
-          const status = result.status.id === 3; // 3 = Accepted
-          const executionTime = Math.round(
-            parseFloat(result.time || "0") * 1000
-          ); // Convert to milliseconds
-          const memoryUsed = result.memory || 0;
-
-          // Save test case result
-          await Submission.saveTestResult(
-            submissionId,
-            testCaseNumber,
-            status,
-            executionTime,
-            memoryUsed
-          );
-
-          if (status) { // if submission was accepted
-            try {
-              // Check if this was first time solving
-              const solved_count = await pool.query(
-                'SELECT COUNT(*) FROM solved WHERE problem_id = $1 AND user_id = $2',
-                [problemId, userId]
-              );
-              
-              if (solved_count.rows[0].count === '0') {
-                await Problem.incrementSolvedCount(problemId);
-              }
-
-              await pool.query(
-                `INSERT INTO solved (problem_id, user_id) 
-                 VALUES ($1, $2) 
-                 ON CONFLICT (problem_id, user_id) DO NOTHING`,
-                [problemId, userId]
-              );
-            } catch (error) {
-              console.error('Error updating solved status:', error);
-            }
-          }
-
-          return {
-            number: testCaseNumber,
-            passed: status,
-            executionTime,
-            memoryUsed,
-            verdict: result.status.description
-          };
-        } catch (error) {
-          console.error(`Test case ${testCaseNumber} error:`, error.message);
-          if (error.code === "ENOENT") {
-            throw new Error(`Test case file not found: ${error.path}`);
-          }
-          return {
-            passed: false,
-            executionTime: 0,
-            memoryUsed: 0,
-            error: error.message,
-          };
-        }
+        return {
+          language_id: getLanguageId(language),
+          source_code: encodeBase64(code),
+          stdin: encodeBase64(input.trim()),
+          expected_output: encodeBase64(expectedOutput.trim()),
+          cpu_time_limit: 2,
+          memory_limit: 128000
+        };
       })
     );
 
-    // Calculate final results
-    const finalStatus = results.every((r) => r.passed);
+    // Update batch submission request
+    const batchResponse = await axios.post(
+      `${JUDGE0_BASE_URL}/submissions/batch`,
+      { submissions },
+      {
+        params: { base64_encoded: true },
+        headers: { "Content-Type": "application/json" }
+      }
+    ).catch(error => {
+      console.error("Judge0 API Error:", error.response?.data || error.message);
+      throw error;
+    });
+
+    const tokens = batchResponse.data.map(sub => sub.token);
+    const results = await waitForBatchResults(tokens);
+
+    // Process results
+    const processedResults = await Promise.all(results.map(async (result, index) => {
+      const status = result.status.id === 3;
+      const executionTime = Math.round(parseFloat(result.time || "0") * 1000);
+      const memoryUsed = result.memory || 0;
+
+      // Save individual test results
+      await Submission.saveTestResult(
+        submissionId,
+        index + 1,
+        status,
+        executionTime,
+        memoryUsed
+      );
+
+      return {
+        number: index + 1,
+        passed: status,
+        executionTime,
+        memoryUsed,
+        verdict: result.status.description
+      };
+    }));
+
+    const finalStatus = processedResults.every(r => r.passed);
     await Submission.updateStatus(submissionId, finalStatus);
 
-    // Send detailed response
+    // Update solved status if all passed
+    if (finalStatus) {
+      const solved_count = await pool.query(
+        'SELECT COUNT(*) FROM solved WHERE problem_id = $1 AND user_id = $2',
+        [problemId, userId]
+      );
+      
+      if (solved_count.rows[0].count === '0') {
+        await Problem.incrementSolvedCount(problemId);
+        await pool.query(
+          `INSERT INTO solved (problem_id, user_id) 
+           VALUES ($1, $2) 
+           ON CONFLICT (problem_id, user_id) DO NOTHING`,
+          [problemId, userId]
+        );
+      }
+    }
+
     res.json({
       status: finalStatus,
       submissionId,
-      testCasesPassed: results.filter((r) => r.passed).length,
-      totalTestCases: results.length,
-      testCases: results,
-      testCaseResults: results.map((result, index) => ({
-        testCase: index + 1,
-        ...result,
-      })),
+      testCasesPassed: processedResults.filter(r => r.passed).length,
+      totalTestCases: processedResults.length,
+      testCases: processedResults
     });
+
   } catch (error) {
     console.error("Submission error:", error);
-    res.status(500).json({
-      error: "Submission failed",
-      details: error.message,
-      path: error.path,
+    res.status(500).json({ 
+      error: "Submission failed", 
+      details: error.message 
     });
   }
 });

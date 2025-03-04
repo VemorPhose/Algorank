@@ -156,10 +156,9 @@ function ProblemPage() {
       submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       code: codeState[language],
       language,
-      status: false,
     };
 
-    // console.log(submissionData);
+    console.log("Submitting:", submissionData); // Add debug logging
 
     setIsSubmitting(true);
     try {
@@ -171,12 +170,17 @@ function ProblemPage() {
         body: JSON.stringify(submissionData),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Submission failed');
+      }
+
       const result = await response.json();
       setSubmissionStatus(result.status);
       setTestResults(result.testCases || []);
     } catch (error) {
       console.error("Submission failed:", error);
-      alert("Failed to submit code");
+      alert(error.message || "Failed to submit code");
     } finally {
       setIsSubmitting(false);
     }

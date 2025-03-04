@@ -3,7 +3,13 @@ const fs = require('fs').promises;
 const path = require('path');
 
 async function readProblemMetadata() {
-  const problemsDir = path.join(__dirname, '..', '..', 'algorank-problems', 'problems');
+  const problemsDir = path.join(
+    __dirname,
+    '..',
+    '..',
+    'algorank-problems',
+    'problems'
+  );
   const problemFolders = await fs.readdir(problemsDir);
   const problems = [];
 

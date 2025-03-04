@@ -21,15 +21,14 @@ A platform for hosting competitive coding contests. Built to provide a seamless 
 - **Problem Set**: Browse available problems with difficulty ratings and categories
 - **User Statistics**: Track submission history and solved problems for each user
 
-### In Progress
+### To-Do List
 - **Contest Dashboard**: View active, upcoming, and past contests
 - **Leaderboard**: Real-time rankings based on problem-solving performance
 - **Extended User Profiles**: Detailed statistics and achievements
-
-### To-Do List
-- Submissions in Python don't work for some reason, Java is untested
 - Implement a monitoring system for all the working components
 - Containerize and deploy on a cloud hosting service
+- Add submissions tab to to view all past submissions, and if one is clicked show submitted code and test case statuses
+- Submissions in Python don't work for some reason, Java is untested
 
 ## Tech Stack
 - **Front-End**: React.js with Vite, TailwindCSS
