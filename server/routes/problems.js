@@ -32,7 +32,16 @@ router.get('/:problemId', async (req, res) => {
       return res.status(404).json({ error: 'Problem not found' });
     }
 
-    const descriptionPath = path.join(__dirname, '..', 'problems', problemId, 'description.md');
+    const descriptionPath = path.join(
+      __dirname, 
+      '..', 
+      '..', 
+      'algorank-problems',
+      'problems',
+      problemId,
+      'description.md'
+    );
+    
     const description = await fs.readFile(descriptionPath, 'utf8');
 
     res.json({

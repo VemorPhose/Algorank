@@ -57,7 +57,15 @@ router.post("/", async (req, res) => {
     });
 
     // Verify test cases directory exists
-    const testCasesDir = path.join(__dirname, "..", "testcases", problemId);
+    const testCasesDir = path.join(
+      __dirname, 
+      '..', 
+      '..', 
+      'algorank-problems',
+      'problems',
+      problemId,
+      'testcases'
+    );
     const inputsDir = path.join(testCasesDir, "inputs");
 
     try {

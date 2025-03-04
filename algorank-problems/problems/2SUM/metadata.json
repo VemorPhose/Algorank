@@ -1,0 +1,8 @@
+{
+    "id": "2SUM",
+    "title": "Sum of Two Numbers",
+    "difficulty": "Easy",
+    "tags": ["math", "implementation"],
+    "timeLimit": 1000,
+    "memoryLimit": 256000
+  }

@@ -84,19 +84,19 @@ function ProblemPage() {
   }, []);
 
   useEffect(() => {
-    const fetchMarkdown = async () => {
+    const fetchProblem = async () => {
       try {
-        const response = await fetch(`/problems/${problemId}.md`);
-        if (!response.ok) throw new Error("File not found");
-        const text = await response.text();
-        setContent(text);
+        const response = await fetch(`http://localhost:5000/api/problems/${problemId}`);
+        if (!response.ok) throw new Error("Problem not found");
+        const data = await response.json();
+        setContent(data.description);
       } catch (error) {
-        console.error("Error fetching markdown:", error);
+        console.error("Error fetching problem:", error);
         setContent("Problem not found.");
       }
     };
 
-    fetchMarkdown();
+    fetchProblem();
   }, [problemId]);
 
   const handleLanguageChange = (e) => {

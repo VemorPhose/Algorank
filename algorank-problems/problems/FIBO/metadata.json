@@ -1,0 +1,8 @@
+{
+    "id": "FIBO",
+    "title": "Fibonacci Sequence",
+    "difficulty": "Easy",
+    "tags": ["math", "dynamic-programming", "implementation"],
+    "timeLimit": 1000,
+    "memoryLimit": 256000
+  }

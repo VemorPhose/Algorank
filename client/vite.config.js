@@ -8,7 +8,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'src/problems/*.md',
+          src: '../algorank-problems/problems/*/description.md',
           dest: 'problems'
         }
       ]
