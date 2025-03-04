@@ -25,9 +25,12 @@ A platform for hosting competitive coding contests. Built to provide a seamless 
 - **Contest Dashboard**: View active, upcoming, and past contests
 - **Leaderboard**: Real-time rankings based on problem-solving performance
 - **Extended User Profiles**: Detailed statistics and achievements
+- Rate limit users on submission endpoint
+- Elo/Rating system
 - Implement a monitoring system for all the working components
 - Containerize and deploy on a cloud hosting service
 - Add submissions tab to to view all past submissions, and if one is clicked show submitted code and test case statuses
+- Also add submissions tab in particular problem
 - Submissions in Python don't work for some reason, Java is untested
 
 ## Tech Stack
