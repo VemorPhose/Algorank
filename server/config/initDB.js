@@ -67,7 +67,7 @@ async function initDB() {
     `);
 
     // Read and insert problems
-    const problems = await readProblemFiles();
+    const problems = await readProblemMetadata();
     
     for (const problem of problems) {
       await pool.query(
