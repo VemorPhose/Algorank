@@ -24,6 +24,8 @@ services:
     volumes:
       - ./judge0.conf:/judge0.conf:ro
     privileged: true
+    deploy:
+      replicas: 4
     <<: *default-logging
     restart: always
 

@@ -26,6 +26,11 @@ A platform for hosting competitive coding contests. Built to provide a seamless 
 - **Leaderboard**: Real-time rankings based on problem-solving performance
 - **Extended User Profiles**: Detailed statistics and achievements
 
+### To-Do List
+- Submissions in Python don't work for some reason, Java is untested
+- Implement a monitoring system for all the working components
+- Containerize and deploy on a cloud hosting service
+
 ## Tech Stack
 - **Front-End**: React.js with Vite, TailwindCSS
 - **Back-End**: Node.js, Express.js
