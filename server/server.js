@@ -10,6 +10,7 @@ app.use(express.json());
 // Routes
 app.use("/api/submit", require("./routes/submit"));
 app.use("/api/problems", require("./routes/problems"));
+app.use('/api/contests', require('./routes/contests'));
 
 const PORT = process.env.PORT || 5000;
 
