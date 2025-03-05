@@ -1,0 +1,9 @@
+{
+  "id": "SUBSEQ",
+  "title": "Longest Increasing Subsequence",
+  "difficulty": "Hard",
+  "tags": ["dynamic-programming", "binary-search"],
+  "timeLimit": 1000,
+  "memoryLimit": 256000,
+  "hidden": false
+}

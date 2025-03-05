@@ -1,0 +1,9 @@
+{
+  "id": "ANAG",
+  "title": "Valid Anagram",
+  "difficulty": "Medium",
+  "tags": ["strings", "sorting", "hash-table"],
+  "timeLimit": 1000,
+  "memoryLimit": 256000,
+  "hidden": false
+}

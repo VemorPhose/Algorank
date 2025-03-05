@@ -2,7 +2,7 @@
 
 ## Problem Structure
 ```
-problem-id/            # Unique 4 character code
+problem-id/            # Unique 4-6 character code
 ├── description.md     # Problem description in Markdown
 ├── metadata.json      # Problem metadata
 └── testcases/

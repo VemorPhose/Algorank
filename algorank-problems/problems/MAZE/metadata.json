@@ -1,0 +1,9 @@
+{
+  "id": "MAZE",
+  "title": "Shortest Path in Maze",
+  "difficulty": "Hard",
+  "tags": ["graphs", "bfs", "shortest-path"],
+  "timeLimit": 1000,
+  "memoryLimit": 256000,
+  "hidden": false
+}
