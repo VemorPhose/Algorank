@@ -21,7 +21,8 @@ async function readProblemMetadata() {
         problems.push({
           problemId: metadata.id,
           title: metadata.title,
-          difficulty: metadata.difficulty
+          difficulty: metadata.difficulty,
+          hidden: metadata.hidden || false
         });
       } catch (error) {
         console.error(`Error reading metadata for problem ${folder}:`, error);
@@ -40,7 +41,8 @@ async function initDB() {
         problem_id VARCHAR(255) UNIQUE NOT NULL,
         title VARCHAR(255) NOT NULL,
         difficulty VARCHAR(20),
-        solved_count INTEGER DEFAULT 0
+        solved_count INTEGER DEFAULT 0,
+        hidden BOOLEAN DEFAULT false
       );
 
       CREATE TABLE IF NOT EXISTS submissions (
@@ -70,6 +72,42 @@ async function initDB() {
         PRIMARY KEY (problem_id, user_id),
         FOREIGN KEY (problem_id) REFERENCES problems(problem_id)
       );
+
+      CREATE TABLE IF NOT EXISTS contests (
+        id SERIAL PRIMARY KEY,
+        contest_id VARCHAR(255) UNIQUE NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        start_time TIMESTAMP NOT NULL,
+        end_time TIMESTAMP NOT NULL,
+        status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'active', 'ended')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS contest_problems (
+        contest_id VARCHAR(255) NOT NULL,
+        problem_id VARCHAR(255) NOT NULL,
+        points INTEGER DEFAULT 100,
+        order_index INTEGER NOT NULL,
+        PRIMARY KEY (contest_id, problem_id),
+        FOREIGN KEY (contest_id) REFERENCES contests(contest_id) ON DELETE CASCADE,
+        FOREIGN KEY (problem_id) REFERENCES problems(problem_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS contest_participants (
+        contest_id VARCHAR(255) NOT NULL,
+        user_id VARCHAR(255) NOT NULL,
+        total_score INTEGER DEFAULT 0,
+        rank INTEGER,
+        registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (contest_id, user_id),
+        FOREIGN KEY (contest_id) REFERENCES contests(contest_id) ON DELETE CASCADE
+      );
+
+      -- Add contest_id to submissions table for tracking contest submissions
+      ALTER TABLE submissions 
+      ADD COLUMN IF NOT EXISTS contest_id VARCHAR(255) REFERENCES contests(contest_id),
+      ADD COLUMN IF NOT EXISTS points INTEGER DEFAULT 0;
     `);
 
     // Read and insert problems
@@ -77,12 +115,13 @@ async function initDB() {
     
     for (const problem of problems) {
       await pool.query(
-        `INSERT INTO problems (problem_id, title, difficulty) 
-         VALUES ($1, $2, $3)
+        `INSERT INTO problems (problem_id, title, difficulty, hidden) 
+         VALUES ($1, $2, $3, $4)
          ON CONFLICT (problem_id) DO UPDATE 
          SET title = EXCLUDED.title, 
-             difficulty = EXCLUDED.difficulty`,
-        [problem.problemId, problem.title, problem.difficulty]
+             difficulty = EXCLUDED.difficulty,
+             hidden = EXCLUDED.hidden`,
+        [problem.problemId, problem.title, problem.difficulty, problem.hidden]
       );
     }
 

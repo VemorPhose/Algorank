@@ -25,7 +25,7 @@ services:
       - ./judge0.conf:/judge0.conf:ro
     privileged: true
     deploy:
-      replicas: 4
+      replicas: 2
     <<: *default-logging
     restart: always
 

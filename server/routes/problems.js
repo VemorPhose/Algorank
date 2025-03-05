@@ -13,7 +13,8 @@ router.get('/', async (req, res) => {
       SELECT p.*, 
              CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END as is_solved
       FROM problems p
-      LEFT JOIN solved s ON p.problem_id = s.problem_id AND s.user_id = $1`,
+      LEFT JOIN solved s ON p.problem_id = s.problem_id AND s.user_id = $1
+      WHERE p.hidden = false`,
       [userId || '']
     );
     res.json(problems.rows);
@@ -26,9 +27,12 @@ router.get('/', async (req, res) => {
 router.get('/:problemId', async (req, res) => {
   try {
     const { problemId } = req.params;
-    const problem = await Problem.getById(problemId);
+    const problem = await pool.query(
+      'SELECT * FROM problems WHERE problem_id = $1',
+      [problemId]
+    );
     
-    if (!problem) {
+    if (!problem.rows[0] || problem.rows[0].hidden) {
       return res.status(404).json({ error: 'Problem not found' });
     }
 
@@ -45,7 +49,7 @@ router.get('/:problemId', async (req, res) => {
     const description = await fs.readFile(descriptionPath, 'utf8');
 
     res.json({
-      ...problem,
+      ...problem.rows[0],
       description
     });
   } catch (error) {
