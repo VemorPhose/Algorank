@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
+import { handleUserLogin } from "../services/userService";
 
 function SignIn() {
   const [loading, setLoading] = useState(false);
@@ -13,15 +14,15 @@ function SignIn() {
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({
-        prompt: 'select_account'
-      });
-      
-      // Add hosted domain restriction to the provider instead of checking after
-      provider.setCustomParameters({
+        prompt: 'select_account',
         hd: "iiitg.ac.in"
       });
       
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      
+      // After successful Firebase auth, sync with our database
+      await handleUserLogin(result.user);
+
     } catch (error) {
       if (error.code === 'auth/popup-closed-by-user') {
         setError("Sign-in cancelled");
