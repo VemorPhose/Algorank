@@ -62,7 +62,13 @@ function Contests() {
 
       data.forEach((contest) => {
         const status = updateContestStatus(contest);
-        categorizedContests[status].push(contest);
+        // Map 'ended' status to 'past' category
+        const category = status === 'ended' ? 'past' : status;
+        if (categorizedContests[category]) {
+          categorizedContests[category].push(contest);
+        } else {
+          console.warn(`Unknown contest status: ${status}`);
+        }
       });
 
       ["active", "upcoming", "past"].forEach((category) => {
@@ -200,15 +206,26 @@ function Contests() {
                   <h3 className="text-xl font-bold mb-2">{contest.title}</h3>
                   <p className="text-gray-300 mb-4">{contest.description}</p>
                   <div className="text-sm text-gray-400">
+                    <p>Contest ID: {contest.contest_id}</p>
                     <p>Started: {formatDateTime(contest.start_time)}</p>
                     <p>Ends: {formatDateTime(contest.end_time)}</p>
                   </div>
-                  <Link
-                    to={`/contest/${contest.contest_id}`}
-                    className="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                  >
-                    Join Now
-                  </Link>
+                  {registeredContests.has(contest.contest_id) ? (
+                    <Link
+                      to={`/contest/${contest.contest_id}`}
+                      className="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      Join Now
+                    </Link>
+                  ) : (
+                    <button
+                      className="mt-4 px-4 py-2 text-white rounded bg-blue-600 hover:bg-blue-700"
+                      onClick={() => handleRegistration(contest.contest_id)}
+                      disabled={registering}
+                    >
+                      {registering ? "Registering..." : "Register to Join"}
+                    </button>
+                  )}
                 </div>
               ))
             ) : (
@@ -234,6 +251,7 @@ function Contests() {
                   <h3 className="text-xl font-bold mb-2">{contest.title}</h3>
                   <p className="text-gray-300 mb-4">{contest.description}</p>
                   <div className="text-sm text-gray-400">
+                    <p>Contest ID: {contest.contest_id}</p>
                     <p>Starts in: {getTimeRemaining(contest.start_time)}</p>
                     <p>Start: {formatDateTime(contest.start_time)}</p>
                     <p>
@@ -287,7 +305,8 @@ function Contests() {
             <table className="w-full text-white border-collapse">
               <thead className="bg-gray-800">
                 <tr>
-                  <th className="p-4 text-left">Contest</th>
+                  <th className="p-4 text-left">ID</th>
+                  <th className="p-4 text-left">Contest Name</th>
                   <th className="p-4 text-left">Start Time</th>
                   <th className="p-4 text-left">Duration</th>
                   <th className="p-4 text-left">Participants</th>
@@ -301,6 +320,7 @@ function Contests() {
                       key={contest.contest_id}
                       className="border-t border-gray-700 hover:bg-gray-800"
                     >
+                      <td className="p-4">{contest.contest_id}</td>
                       <td className="p-4">{contest.title}</td>
                       <td className="p-4">
                         {formatDateTime(contest.start_time)}
@@ -324,7 +344,7 @@ function Contests() {
                   ))
                 ) : (
                   <tr className="border-t border-gray-700">
-                    <td colSpan="5" className="p-4 text-center text-gray-400">
+                    <td colSpan="6" className="p-4 text-center text-gray-400">
                       No past contests found
                     </td>
                   </tr>

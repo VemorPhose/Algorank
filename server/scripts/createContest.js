@@ -1,6 +1,7 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const pool = require('../config/db');
+const fs = require('fs').promises;
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -9,6 +10,28 @@ const rl = readline.createInterface({
 });
 
 const question = (query) => new Promise((resolve) => rl.question(query, resolve));
+
+async function updateProblemHiddenStatus(problemId, hidden) {
+  try {
+    // Update database
+    await pool.query(
+      'UPDATE problems SET hidden = $1 WHERE problem_id = $2',
+      [hidden, problemId]
+    );
+
+    // Update metadata.json
+    const problemsDir = path.join(__dirname, '..', '..', 'algorank-problems', 'problems');
+    const metadataPath = path.join(problemsDir, problemId, 'metadata.json');
+    
+    const metadata = JSON.parse(await fs.readFile(metadataPath, 'utf8'));
+    metadata.hidden = hidden;
+    
+    await fs.writeFile(metadataPath, JSON.stringify(metadata, null, 2));
+  } catch (error) {
+    console.error(`Error updating hidden status for problem ${problemId}:`, error);
+    throw error;
+  }
+}
 
 async function createContest() {
   try {
@@ -26,6 +49,31 @@ async function createContest() {
     const startTimestamp = new Date(`${startDate}T${startTime}`);
     const endTimestamp = new Date(startTimestamp.getTime() + durationHours * 60 * 60 * 1000);
 
+    // Get problems first
+    const numProblems = parseInt(await question('Enter number of problems: '));
+    const problems = [];
+
+    for (let i = 0; i < numProblems; i++) {
+      const problemId = await question(`Enter problem ID for problem ${i + 1}: `);
+      const points = await question(`Enter points for problem ${i + 1}: `);
+      
+      // Verify problem exists
+      const problemExists = await pool.query(
+        'SELECT 1 FROM problems WHERE problem_id = $1',
+        [problemId]
+      );
+
+      if (problemExists.rows.length === 0) {
+        throw new Error(`Problem ${problemId} does not exist`);
+      }
+
+      problems.push({
+        problemId,
+        points: parseInt(points),
+        orderIndex: i + 1
+      });
+    }
+
     // Begin transaction
     await pool.query('BEGIN');
 
@@ -37,40 +85,11 @@ async function createContest() {
         [contestId, title, description, startTimestamp, endTimestamp]
       );
 
-      // Verify contest was created
-      const contestExists = await pool.query(
-        'SELECT 1 FROM contests WHERE contest_id = $1',
-        [contestId]
-      );
-
-      if (contestExists.rows.length === 0) {
-        throw new Error('Failed to create contest');
-      }
-
-      // Get problems
-      const numProblems = parseInt(await question('Enter number of problems: '));
-      const problems = [];
-
-      for (let i = 0; i < numProblems; i++) {
-        const problemId = await question(`Enter problem ID for problem ${i + 1}: `);
-        const points = await question(`Enter points for problem ${i + 1}: `);
-        
-        // Verify problem exists
-        const problemExists = await pool.query(
-          'SELECT 1 FROM problems WHERE problem_id = $1',
-          [problemId]
-        );
-
-        if (problemExists.rows.length === 0) {
-          throw new Error(`Problem ${problemId} does not exist`);
-        }
-
-        problems.push({
-          problemId,
-          points: parseInt(points),
-          orderIndex: i + 1
-        });
-      }
+      // Wait for contest insertion to complete
+      await pool.query('COMMIT');
+      
+      // Start new transaction for problems
+      await pool.query('BEGIN');
 
       // Insert problems
       for (const problem of problems) {
@@ -81,13 +100,10 @@ async function createContest() {
         );
 
         // Set problems as hidden
-        await pool.query(
-          `UPDATE problems SET hidden = true WHERE problem_id = $1`,
-          [problem.problemId]
-        );
+        await updateProblemHiddenStatus(problem.problemId, true);
       }
 
-      // If everything succeeded, commit the transaction
+      // Commit problem insertions
       await pool.query('COMMIT');
 
       console.log(`Contest ${contestId} created successfully!`);
@@ -97,7 +113,6 @@ async function createContest() {
       });
 
     } catch (error) {
-      // If anything fails, rollback the entire transaction
       await pool.query('ROLLBACK');
       throw error;
     }
