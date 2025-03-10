@@ -1,10 +1,13 @@
 import { auth } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 
 function SignOut() {
   const [user] = useAuthState(auth);
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   const handleSignOut = async () => {
     try {
@@ -17,14 +20,33 @@ function SignOut() {
 
   const getFullName = () => user?.displayName || "User";
 
-  // Add function to handle profile navigation
   const handleProfileClick = () => {
     navigate("/profile");
   };
 
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative ml-auto group">
-      <div className="btn btn-ghost normal-case flex items-center gap-2">
+    <div className="relative ml-auto" ref={menuRef}>
+      <button
+        onClick={toggleMenu}
+        className="btn btn-ghost normal-case flex items-center gap-2"
+      >
         <div className="avatar flex items-center">
           <div className="ring-primary ring-offset-base-100 w-9 h-9 rounded-full ring ring-offset-3">
             <svg
@@ -37,26 +59,28 @@ function SignOut() {
             </svg>
           </div>
         </div>
-      </div>
+      </button>
       
-      <ul className="absolute right-0 top-full mt-1 hidden group-hover:block menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
-        <li>
-          <button 
-            onClick={handleProfileClick} 
-            className="text-sm font-bold text-base-content hover:bg-gray-100 w-full text-left"
-          >
-            {getFullName()}
-          </button>
-        </li>
-        <li>
-          <button 
-            onClick={handleSignOut}
-            className="text-sm text-base-content hover:bg-gray-100 w-full text-left"
-          >
-            Sign Out
-          </button>
-        </li>
-      </ul>
+      {menuOpen && (
+        <ul className="absolute right-0 top-full mt-1 menu p-2 shadow bg-base-100 rounded-box w-52 z-10 transition-opacity duration-300 ease-in-out">
+          <li>
+            <button 
+              onClick={handleProfileClick} 
+              className="text-sm font-bold text-base-content hover:bg-gray-300 hover:text-black w-full text-left"
+            >
+              {getFullName()}
+            </button>
+          </li>
+          <li>
+            <button 
+              onClick={handleSignOut}
+              className="text-sm text-base-content hover:bg-gray-300 hover:text-black w-full text-left"
+            >
+              Sign Out
+            </button>
+          </li>
+        </ul>
+      )}
     </div>
   );
 }
