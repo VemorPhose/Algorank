@@ -1,8 +1,10 @@
 import { auth } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
 function SignOut() {
   const [user] = useAuthState(auth);
+  const navigate = useNavigate(); // Initialize the navigate function
 
   const handleSignOut = async () => {
     try {
@@ -14,6 +16,11 @@ function SignOut() {
   };
 
   const getFullName = () => user?.displayName || "User";
+
+  // Add function to handle profile navigation
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
 
   return (
     <div className="relative ml-auto group">
@@ -34,7 +41,12 @@ function SignOut() {
       
       <ul className="absolute right-0 top-full mt-1 hidden group-hover:block menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
         <li>
-          <div className="text-sm font-bold text-base-content">{getFullName()}</div>
+          <button 
+            onClick={handleProfileClick} 
+            className="text-sm font-bold text-base-content hover:bg-gray-100 w-full text-left"
+          >
+            {getFullName()}
+          </button>
         </li>
         <li>
           <button 
