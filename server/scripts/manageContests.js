@@ -65,20 +65,26 @@ async function updateContestStatus() {
           [newStatus, contest.contest_id]
         );
 
-        // If contest has ended, handle problem unhiding
-        if (newStatus === 'ended') {
-          // Get problems from ended contest
+        // Handle problem unhiding for both active and ended states
+        if (newStatus === 'active' || newStatus === 'ended') {
+          // Get problems from this contest
           const { rows: contestProblems } = await client.query(
             'SELECT problem_id FROM contest_problems WHERE contest_id = $1',
             [contest.contest_id]
           );
 
-          // Get problems used in active/upcoming contests
-          const activeProblems = await getActiveAndUpcomingContestProblems();
+          // Get problems used in upcoming contests only (not active ones)
+          const { rows: upcomingProblems } = await client.query(`
+            SELECT DISTINCT cp.problem_id 
+            FROM contest_problems cp
+            JOIN contests c ON cp.contest_id = c.contest_id
+            WHERE c.status = 'upcoming'
+          `);
+          const upcomingProblemSet = new Set(upcomingProblems.map(row => row.problem_id));
 
-          // Unhide problems that aren't used in other contests
+          // Unhide problems that aren't used in upcoming contests
           for (const { problem_id } of contestProblems) {
-            if (!activeProblems.has(problem_id)) {
+            if (!upcomingProblemSet.has(problem_id)) {
               await updateProblemHiddenStatus(problem_id, false);
             }
           }
