@@ -5,5 +5,5 @@
   "tags": ["math", "implementation"],
   "timeLimit": 1000,
   "memoryLimit": 256000,
-  "hidden": true
+  "hidden": false
 }

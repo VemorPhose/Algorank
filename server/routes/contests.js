@@ -67,4 +67,58 @@ router.post('/:contestId/register', async (req, res) => {
   }
 });
 
+router.get('/:contestId/details', async (req, res) => {
+  try {
+    const { contestId } = req.params;
+    const userId = req.query.userId || '';
+
+    // Get contest details
+    const contestQuery = `
+      SELECT * FROM contests WHERE contest_id = $1
+    `;
+    const contestResult = await pool.query(contestQuery, [contestId]);
+    
+    if (contestResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    // Get problems with solved status and solved count
+    const problemsQuery = `
+      SELECT 
+        p.*,
+        cp.points,
+        CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END as is_solved,
+        (SELECT COUNT(*) FROM solved WHERE problem_id = p.problem_id) as solved_count
+      FROM problems p
+      JOIN contest_problems cp ON p.problem_id = cp.problem_id
+      LEFT JOIN solved s ON p.problem_id = s.problem_id AND s.user_id = $2
+      WHERE cp.contest_id = $1
+      ORDER BY cp.order_index
+    `;
+    const problemsResult = await pool.query(problemsQuery, [contestId, userId]);
+
+    // Calculate user's score if they're logged in
+    let userScore = 0;
+    if (userId) {
+      const scoreQuery = `
+        SELECT COALESCE(SUM(cp.points), 0) as total_score
+        FROM contest_problems cp
+        JOIN solved s ON cp.problem_id = s.problem_id
+        WHERE cp.contest_id = $1 AND s.user_id = $2
+      `;
+      const scoreResult = await pool.query(scoreQuery, [contestId, userId]);
+      userScore = scoreResult.rows[0].total_score;
+    }
+
+    res.json({
+      contest: contestResult.rows[0],
+      problems: problemsResult.rows,
+      userScore
+    });
+  } catch (error) {
+    console.error('Error fetching contest details:', error);
+    res.status(500).json({ error: 'Failed to fetch contest details' });
+  }
+});
+
 module.exports = router;

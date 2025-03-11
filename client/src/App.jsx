@@ -11,6 +11,7 @@ import Contests from './pages/Contests.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import Profile from './pages/Profile.jsx';
+import ContestPage from './pages/ContestPage.jsx';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/contest/:contestId" element={<ContestPage />} />
       </Routes>
     </Router>
   );

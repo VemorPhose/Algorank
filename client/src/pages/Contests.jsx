@@ -71,11 +71,17 @@ function Contests() {
         }
       });
 
-      ["active", "upcoming", "past"].forEach((category) => {
+      // Sort active and upcoming normally (ascending)
+      ['active', 'upcoming'].forEach((category) => {
         categorizedContests[category].sort(
           (a, b) => new Date(a.start_time) - new Date(b.start_time)
         );
       });
+
+      // Sort past contests in reverse (descending)
+      categorizedContests.past.sort(
+        (a, b) => new Date(b.start_time) - new Date(a.start_time)
+      );
 
       setContests(categorizedContests);
     } catch (err) {
