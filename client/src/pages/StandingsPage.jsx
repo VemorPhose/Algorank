@@ -101,7 +101,6 @@ function StandingsPage() {
                   <tr>
                     <th className="p-4 text-left">Rank</th>
                     <th className="p-4 text-left">Username</th>
-                    <th className="p-4 text-center">Total Score</th>
                     {contest.problems?.map((problem) => (
                       <th 
                         key={problem.problem_id} 
@@ -112,6 +111,7 @@ function StandingsPage() {
                         <div className="text-xs text-gray-400">({problem.points} pts)</div>
                       </th>
                     ))}
+                    <th className="p-4 text-center font-bold">Total Score</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -124,9 +124,6 @@ function StandingsPage() {
                     >
                       <td className="p-4">{index + 1}</td>
                       <td className="p-4">{participant.username}</td>
-                      <td className="p-4 text-center font-bold">
-                        {participant.total_score}
-                      </td>
                       {contest.problems?.map((problem) => {
                         const score = participant.problem_scores[problem.problem_id];
                         return (
@@ -148,6 +145,9 @@ function StandingsPage() {
                           </td>
                         );
                       })}
+                      <td className="p-4 text-center font-bold bg-gray-700">
+                        {participant.total_score}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
