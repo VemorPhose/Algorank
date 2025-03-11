@@ -133,7 +133,7 @@ router.get('/:contestId/standings', async (req, res) => {
         json_agg(json_build_object(
           'problem_id', p.problem_id,
           'points', cp.points
-        )) as problems
+        ) ORDER BY cp.order_index) as problems
       FROM contests c
       JOIN contest_problems cp ON c.contest_id = cp.contest_id
       JOIN problems p ON cp.problem_id = p.problem_id
@@ -146,28 +146,27 @@ router.get('/:contestId/standings', async (req, res) => {
       return res.status(404).json({ error: 'Contest not found' });
     }
 
-    // Get participants' standings
+    // Get participants' standings with solved and attempted problems
     const standingsQuery = `
       WITH participant_problems AS (
         SELECT 
           cp.user_id,
           u.username,
-          array_agg(DISTINCT s.problem_id) as solved_problems,
-          array_agg(DISTINCT CASE 
-            WHEN s.status = false THEN s.problem_id 
-            ELSE NULL 
-          END) FILTER (WHERE s.status = false) as attempted_problems,
+          array_agg(DISTINCT CASE WHEN s.status = true THEN s.problem_id END) FILTER (WHERE s.status = true) as solved_problems,
+          array_agg(DISTINCT CASE WHEN s.status = false THEN s.problem_id END) FILTER (WHERE s.status = false) as attempted_problems,
           SUM(CASE WHEN s.status = true THEN cp2.points ELSE 0 END) as total_score
         FROM contest_participants cp
         JOIN users u ON cp.user_id = u.user_id
-        LEFT JOIN submissions s ON cp.user_id = s.user_id
-        LEFT JOIN contest_problems cp2 ON s.problem_id = cp2.problem_id AND cp2.contest_id = $1
+        LEFT JOIN submissions s ON cp.user_id = s.user_id 
+          AND s.contest_id = $1
+        LEFT JOIN contest_problems cp2 ON s.problem_id = cp2.problem_id 
+          AND cp2.contest_id = $1
         WHERE cp.contest_id = $1
         GROUP BY cp.user_id, u.username
       )
       SELECT *
       FROM participant_problems
-      ORDER BY total_score DESC, array_length(solved_problems, 1) DESC
+      ORDER BY total_score DESC, array_length(solved_problems, 1) DESC NULLS LAST
     `;
 
     const standingsResult = await pool.query(standingsQuery, [contestId]);

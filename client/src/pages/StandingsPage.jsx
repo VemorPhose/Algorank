@@ -17,6 +17,7 @@ function StandingsPage() {
   useEffect(() => {
     const fetchStandings = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
           `http://localhost:5000/api/contests/${contestId}/standings${
             user ? `?userId=${user.uid}` : ""
@@ -28,10 +29,12 @@ function StandingsPage() {
         }
 
         const data = await response.json();
+        console.log("Standings data:", data); // Debug log
         setContest(data.contest);
         setStandings(data.standings);
         setLastUpdated(new Date());
       } catch (err) {
+        console.error("Error:", err); // Debug log
         setError(err.message);
       } finally {
         setLoading(false);
@@ -130,16 +133,16 @@ function StandingsPage() {
                         >
                           <span
                             className={`px-2 py-1 rounded ${
-                              participant.solved_problems.includes(problem.problem_id)
+                              participant.solved_problems?.includes(problem.problem_id)
                                 ? "bg-green-600"
-                                : participant.attempted_problems.includes(problem.problem_id)
+                                : participant.attempted_problems?.includes(problem.problem_id)
                                 ? "bg-red-600"
                                 : ""
                             }`}
                           >
-                            {participant.solved_problems.includes(problem.problem_id)
+                            {participant.solved_problems?.includes(problem.problem_id)
                               ? "✓"
-                              : participant.attempted_problems.includes(problem.problem_id)
+                              : participant.attempted_problems?.includes(problem.problem_id)
                               ? "✗"
                               : "-"}
                           </span>

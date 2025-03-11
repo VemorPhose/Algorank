@@ -8,5 +8,5 @@
   ],
   "timeLimit": 1000,
   "memoryLimit": 256000,
-  "hidden": false
+  "hidden": true
 }
