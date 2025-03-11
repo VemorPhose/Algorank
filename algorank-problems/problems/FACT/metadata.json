@@ -2,7 +2,10 @@
   "id": "FACT",
   "title": "Factorial",
   "difficulty": "Easy",
-  "tags": ["math", "implementation"],
+  "tags": [
+    "math",
+    "implementation"
+  ],
   "timeLimit": 1000,
   "memoryLimit": 256000,
   "hidden": false
