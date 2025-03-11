@@ -31,7 +31,11 @@ function ContestPage() {
             user ? `?userId=${user.uid}` : ""
           }`
         );
-        if (!response.ok) throw new Error("Failed to fetch contest details");
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch contest details");
+        }
+
         const data = await response.json();
         
         // Check if contest access is allowed
@@ -159,7 +163,7 @@ function ContestPage() {
                       </td>
                       <td className="p-4">
                         <Link
-                          to={`/problem/${problem.problem_id}`}
+                          to={`/problem/${problem.problem_id}?contestId=${contestId}`}
                           className="text-blue-400 hover:text-blue-300"
                         >
                           Solve

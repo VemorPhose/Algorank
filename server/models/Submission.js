@@ -2,10 +2,10 @@ const pool = require('../config/db');
 
 class Submission {
   static async create(submissionData) {
-    const { submissionId, problemId, userId, code, language } = submissionData;
+    const { submissionId, problemId, userId, code, language, contestId } = submissionData;
     await pool.query(
-      'INSERT INTO submissions (submission_id, problem_id, user_id, code, language) VALUES ($1, $2, $3, $4, $5)',
-      [submissionId, problemId, userId, code, language]
+      'INSERT INTO submissions (submission_id, problem_id, user_id, code, language, contest_id) VALUES ($1, $2, $3, $4, $5, $6)',
+      [submissionId, problemId, userId, code, language, contestId]
     );
   }
 

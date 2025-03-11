@@ -50,7 +50,7 @@ async function waitForBatchResults(tokens) {
 
 // Update the main route handler
 router.post("/", async (req, res) => {
-  const { problemId, userId, submissionId, code, language } = req.body;
+  const { problemId, userId, submissionId, code, language, contestId } = req.body;
 
   if (!problemId || !userId || !code || !language) {
     console.log("Missing fields:", { problemId, userId, code, language });
@@ -58,14 +58,15 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    console.log("Received submission:", { problemId, userId, submissionId, language });
-    // Create submission record
+    console.log("Received submission:", { problemId, userId, submissionId, language, contestId });
+    // Create submission record with contestId
     await Submission.create({
       submissionId,
       problemId,
       userId,
       code,
       language,
+      contestId
     });
 
     // Verify test cases directory exists
@@ -170,6 +171,24 @@ router.post("/", async (req, res) => {
           [problemId, userId]
         );
       }
+    }
+
+    // If submission successful and part of a contest, update contest score
+    if (finalStatus && contestId) {
+      await pool.query(
+        `UPDATE contest_participants 
+         SET total_score = (
+           SELECT COALESCE(SUM(cp.points), 0)
+           FROM contest_problems cp
+           JOIN submissions s ON cp.problem_id = s.problem_id
+           WHERE cp.contest_id = $1 
+           AND s.user_id = $2 
+           AND s.contest_id = $1
+           AND s.status = true
+         )
+         WHERE contest_id = $1 AND user_id = $2`,
+        [contestId, userId]
+      );
     }
 
     res.json({

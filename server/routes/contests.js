@@ -70,7 +70,7 @@ router.post('/:contestId/register', async (req, res) => {
 router.get('/:contestId/details', async (req, res) => {
   try {
     const { contestId } = req.params;
-    const userId = req.query.userId || '';
+    const userId = req.query.userId;
 
     // Get contest details
     const contestQuery = `
@@ -82,29 +82,38 @@ router.get('/:contestId/details', async (req, res) => {
       return res.status(404).json({ error: 'Contest not found' });
     }
 
-    // Get problems with solved status and solved count
+    // Get problems with solved status - only count submissions made during the contest
     const problemsQuery = `
       SELECT 
         p.*,
         cp.points,
         CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END as is_solved,
-        (SELECT COUNT(*) FROM solved WHERE problem_id = p.problem_id) as solved_count
+        (SELECT COUNT(*) FROM submissions 
+         WHERE problem_id = p.problem_id 
+         AND status = true 
+         AND contest_id = $1) as solved_count
       FROM problems p
       JOIN contest_problems cp ON p.problem_id = cp.problem_id
-      LEFT JOIN solved s ON p.problem_id = s.problem_id AND s.user_id = $2
+      LEFT JOIN submissions s ON p.problem_id = s.problem_id 
+        AND s.user_id = $2 
+        AND s.contest_id = $1 
+        AND s.status = true
       WHERE cp.contest_id = $1
       ORDER BY cp.order_index
     `;
-    const problemsResult = await pool.query(problemsQuery, [contestId, userId]);
+    const problemsResult = await pool.query(problemsQuery, [contestId, userId || '']);
 
-    // Calculate user's score if they're logged in
+    // Calculate user's contest score
     let userScore = 0;
     if (userId) {
       const scoreQuery = `
         SELECT COALESCE(SUM(cp.points), 0) as total_score
         FROM contest_problems cp
-        JOIN solved s ON cp.problem_id = s.problem_id
-        WHERE cp.contest_id = $1 AND s.user_id = $2
+        JOIN submissions s ON cp.problem_id = s.problem_id
+        WHERE cp.contest_id = $1 
+        AND s.user_id = $2 
+        AND s.contest_id = $1
+        AND s.status = true
       `;
       const scoreResult = await pool.query(scoreQuery, [contestId, userId]);
       userScore = scoreResult.rows[0].total_score;
@@ -115,6 +124,7 @@ router.get('/:contestId/details', async (req, res) => {
       problems: problemsResult.rows,
       userScore
     });
+
   } catch (error) {
     console.error('Error fetching contest details:', error);
     res.status(500).json({ error: 'Failed to fetch contest details' });

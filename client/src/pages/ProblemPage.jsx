@@ -12,9 +12,11 @@ import { indentUnit } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useSearchParams } from "react-router-dom"; // Add this import from react-router-dom
 
 function ProblemPage() {
   const { problemId } = useParams();
+  const [searchParams] = useSearchParams(); // Add this import from react-router-dom
   const [user, setUser] = useState(null);
   const [content, setContent] = useState("Loading...");
   const [codeState, setCodeState] = useState({
@@ -150,12 +152,15 @@ function ProblemPage() {
       return;
     }
 
+    const contestId = searchParams.get('contestId'); // Get contestId from URL
+
     const submissionData = {
       problemId,
       userId: user.uid,
       submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       code: codeState[language],
       language,
+      contestId // Add this
     };
 
     console.log("Submitting:", submissionData); // Add debug logging
