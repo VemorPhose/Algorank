@@ -136,47 +136,61 @@ router.get('/:contestId/standings', async (req, res) => {
     const { contestId } = req.params;
     const userId = req.query.userId;
 
-    // Get contest details with problems
+    // First get contest details with problems
     const contestQuery = `
       SELECT 
         c.*,
-        json_agg(json_build_object(
-          'problem_id', p.problem_id,
-          'points', cp.points
-        ) ORDER BY cp.order_index) as problems
+        json_agg(
+          json_build_object(
+            'problem_id', p.problem_id,
+            'title', p.title,
+            'points', cp.points
+          ) ORDER BY cp.order_index
+        ) as problems
       FROM contests c
       JOIN contest_problems cp ON c.contest_id = cp.contest_id
       JOIN problems p ON cp.problem_id = p.problem_id
       WHERE c.contest_id = $1
       GROUP BY c.contest_id
     `;
+
     const contestResult = await pool.query(contestQuery, [contestId]);
     
     if (contestResult.rows.length === 0) {
       return res.status(404).json({ error: 'Contest not found' });
     }
 
-    // Get participants' standings with solved and attempted problems
+    // Get participants' standings with problem-wise scores
     const standingsQuery = `
-      WITH participant_problems AS (
+      WITH problem_scores AS (
         SELECT 
-          cp.user_id,
-          u.username,
-          array_agg(DISTINCT CASE WHEN s.status = true THEN s.problem_id END) FILTER (WHERE s.status = true) as solved_problems,
-          array_agg(DISTINCT CASE WHEN s.status = false THEN s.problem_id END) FILTER (WHERE s.status = false) as attempted_problems,
-          SUM(CASE WHEN s.status = true THEN cp2.points ELSE 0 END) as total_score
-        FROM contest_participants cp
-        JOIN users u ON cp.user_id = u.user_id
-        LEFT JOIN submissions s ON cp.user_id = s.user_id 
-          AND s.contest_id = $1
-        LEFT JOIN contest_problems cp2 ON s.problem_id = cp2.problem_id 
-          AND cp2.contest_id = $1
-        WHERE cp.contest_id = $1
-        GROUP BY cp.user_id, u.username
+          s.user_id,
+          s.problem_id,
+          cp.points as score,
+          s.status
+        FROM submissions s
+        JOIN contest_problems cp ON s.problem_id = cp.problem_id 
+          AND cp.contest_id = s.contest_id
+        WHERE s.contest_id = $1
+        GROUP BY s.user_id, s.problem_id, cp.points, s.status
       )
-      SELECT *
-      FROM participant_problems
-      ORDER BY total_score DESC, array_length(solved_problems, 1) DESC NULLS LAST
+      SELECT 
+        cp.user_id,
+        u.username,
+        COALESCE(SUM(CASE WHEN ps.status THEN ps.score ELSE 0 END), 0) as total_score,
+        jsonb_object_agg(
+          COALESCE(ps.problem_id, 'none'),
+          jsonb_build_object(
+            'points', CASE WHEN ps.status THEN ps.score ELSE 0 END,
+            'attempted', CASE WHEN ps.problem_id IS NOT NULL THEN true ELSE false END
+          )
+        ) as problem_scores
+      FROM contest_participants cp
+      JOIN users u ON cp.user_id = u.user_id
+      LEFT JOIN problem_scores ps ON u.user_id = ps.user_id
+      WHERE cp.contest_id = $1
+      GROUP BY cp.user_id, u.username
+      ORDER BY total_score DESC, u.username
     `;
 
     const standingsResult = await pool.query(standingsQuery, [contestId]);

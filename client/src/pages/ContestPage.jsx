@@ -104,9 +104,17 @@ function ContestPage() {
         {contest && canAccessContest() ? (
           <>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-white mb-4">
-                {contest.title}
-              </h1>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-3xl font-bold text-white">
+                  {contest.title}
+                </h1>
+                <Link
+                  to={`/contest/${contestId}/standings`}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
+                >
+                  View Standings
+                </Link>
+              </div>
               <div className="text-gray-300 mb-2">{contest.description}</div>
               <div className="flex justify-between items-center">
                 <div className="text-gray-400">

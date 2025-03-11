@@ -85,18 +85,14 @@ function StandingsPage() {
           <>
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-white mb-4">
-                {contest.title} - Standings
+                {contest.title} - {contest.status === 'active' ? 'Live Rankings' : 'Final Standings'}
               </h1>
-              <div className="text-gray-400">
-                {contest.status === 'active' ? (
-                  <div className="flex justify-between items-center">
-                    <span>Contest is ongoing</span>
-                    <span>Last updated: {lastUpdated?.toLocaleTimeString()}</span>
-                  </div>
-                ) : (
-                  <span>Final Standings</span>
-                )}
-              </div>
+              {contest.status === 'active' && (
+                <div className="text-gray-400 flex justify-between items-center">
+                  <span>Contest is ongoing</span>
+                  <span>Last updated: {lastUpdated?.toLocaleTimeString()}</span>
+                </div>
+              )}
             </div>
 
             <div className="overflow-x-auto">
@@ -105,10 +101,15 @@ function StandingsPage() {
                   <tr>
                     <th className="p-4 text-left">Rank</th>
                     <th className="p-4 text-left">Username</th>
-                    <th className="p-4 text-center">Score</th>
+                    <th className="p-4 text-center">Total Score</th>
                     {contest.problems?.map((problem) => (
-                      <th key={problem.problem_id} className="p-4 text-center">
+                      <th 
+                        key={problem.problem_id} 
+                        className="p-4 text-center"
+                        title={problem.title}
+                      >
                         {problem.problem_id}
+                        <div className="text-xs text-gray-400">({problem.points} pts)</div>
                       </th>
                     ))}
                   </tr>
@@ -126,28 +127,27 @@ function StandingsPage() {
                       <td className="p-4 text-center font-bold">
                         {participant.total_score}
                       </td>
-                      {contest.problems?.map((problem) => (
-                        <td
-                          key={problem.problem_id}
-                          className="p-4 text-center"
-                        >
-                          <span
-                            className={`px-2 py-1 rounded ${
-                              participant.solved_problems?.includes(problem.problem_id)
-                                ? "bg-green-600"
-                                : participant.attempted_problems?.includes(problem.problem_id)
-                                ? "bg-red-600"
-                                : ""
-                            }`}
+                      {contest.problems?.map((problem) => {
+                        const score = participant.problem_scores[problem.problem_id];
+                        return (
+                          <td
+                            key={`${participant.user_id}-${problem.problem_id}`}
+                            className="p-4 text-center"
                           >
-                            {participant.solved_problems?.includes(problem.problem_id)
-                              ? "✓"
-                              : participant.attempted_problems?.includes(problem.problem_id)
-                              ? "✗"
-                              : "-"}
-                          </span>
-                        </td>
-                      ))}
+                            <span
+                              className={`px-2 py-1 rounded ${
+                                score?.points > 0
+                                  ? "text-green-400 font-medium"
+                                  : score?.attempted
+                                  ? "text-red-400"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {score?.points > 0 ? score.points : score?.attempted ? "0" : "-"}
+                            </span>
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>
