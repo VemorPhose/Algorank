@@ -20,10 +20,10 @@ A platform for hosting competitive coding contests. Built to provide a seamless 
 - **Code Execution**: Secure sandboxed environment using Judge0 API for running and evaluating code
 - **Problem Set**: Browse available problems with difficulty ratings and categories
 - **User Statistics**: Track submission history and solved problems for each user
-
-### To-Do List
 - **Contest Dashboard**: View active, upcoming, and past contests
 - **Leaderboard**: Real-time rankings based on problem-solving performance
+
+### To-Do List
 - **Extended User Profiles**: Detailed statistics and achievements
 - Rate limit users on submission endpoint
 - Elo/Rating system
