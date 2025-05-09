@@ -215,127 +215,134 @@ function ProblemPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* Problem Description Card */}
-            <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
-              <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b">
-                <div>
-                  <CardTitle className="text-xl md:text-2xl font-bold">
-                    {problemId}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    Solve the problem below
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge className={getDifficultyColor("easy")}>Easy</Badge>
-                  {/* Replace with actual difficulty if available */}
-                  <Badge variant="outline">#DynamicProgramming</Badge>
-                  {/* Replace with actual tags if available */}
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-y-auto p-6">
-                <Tabs defaultValue="description" className="w-full">
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="description">Description</TabsTrigger>
-                    <TabsTrigger value="solution">Solution</TabsTrigger>
-                    <TabsTrigger value="discussion">Discussion</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="description">
-                    <div className="prose max-w-none dark:prose-invert">
-                      <ReactMarkdown>{content}</ReactMarkdown>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="solution">
-                    <div className="text-muted-foreground">
-                      Solution coming soon.
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="discussion">
-                    <div className="text-muted-foreground">
-                      Discussion coming soon.
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+            <div className="lg:col-span-1">
+              <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
+                <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b">
+                  <div>
+                    <CardTitle className="text-xl md:text-2xl font-bold">
+                      {problemId}
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Solve the problem below
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className={getDifficultyColor("easy")}>Easy</Badge>
+                    {/* Replace with actual difficulty if available */}
+                    <Badge variant="outline">#DynamicProgramming</Badge>
+                    {/* Replace with actual tags if available */}
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto p-6">
+                  <Tabs defaultValue="description" className="w-full">
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="description">Description</TabsTrigger>
+                      <TabsTrigger value="solution">Solution</TabsTrigger>
+                      <TabsTrigger value="discussion">Discussion</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="description">
+                      <div className="prose max-w-none dark:prose-invert">
+                        <ReactMarkdown>{content}</ReactMarkdown>
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="solution">
+                      <div className="text-muted-foreground">
+                        Solution coming soon.
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="discussion">
+                      <div className="text-muted-foreground">
+                        Discussion coming soon.
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </div>
             {/* Code Editor Card */}
-            <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
-              <CardHeader className="border-b">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <Code className="h-5 w-5" /> Code Editor
-                </CardTitle>
-                <CardDescription>
-                  Write and test your solution below.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col gap-4 p-6">
-                <div className="mb-2 flex items-center gap-2">
-                  <Select value={language} onValueChange={handleLanguageChange}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cpp">C++</SelectItem>
-                      <SelectItem value="python">Python</SelectItem>
-                      <SelectItem value="java">Java</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex-1">
-                  <CodeMirror
-                    value={codeState[language]}
-                    height="300px"
-                    theme={vscodeDark}
-                    extensions={getLanguageConfig()}
-                    onChange={handleCodeChange}
-                    className="rounded-md border border-border bg-background text-foreground"
-                  />
-                </div>
-                <div className="flex flex-col gap-2 min-w-[200px]">
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="w-full"
-                  >
-                    {isSubmitting ? "Submitting..." : "Submit"}
-                  </Button>
-                  {submissionStatus && (
-                    <div className="mt-2">
-                      <Badge
-                        className={
-                          submissionStatus === "success"
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }
-                      >
-                        {submissionStatus === "success"
-                          ? "Accepted"
-                          : "Wrong Answer"}
-                      </Badge>
-                    </div>
-                  )}
-                  {testResults.length > 0 && (
-                    <div className="mt-2">
-                      <div className="font-semibold mb-1">Test Results:</div>
-                      <ul className="space-y-1">
-                        {testResults.map((result, idx) => (
-                          <li key={idx} className="flex items-center gap-2">
-                            {result.passed ? (
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-red-500" />
-                            )}
-                            <span>
-                              {result.name}:{" "}
-                              {result.passed ? "Passed" : "Failed"}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="lg:col-span-1">
+              <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
+                <CardHeader className="border-b">
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <Code className="h-5 w-5" /> Code Editor
+                  </CardTitle>
+                  <CardDescription>
+                    Write and test your solution below.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col gap-4 p-6">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Select
+                      value={language}
+                      onValueChange={handleLanguageChange}
+                    >
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cpp">C++</SelectItem>
+                        <SelectItem value="python">Python</SelectItem>
+                        <SelectItem value="java">Java</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex-1">
+                    <CodeMirror
+                      value={codeState[language]}
+                      height="300px"
+                      theme={vscodeDark}
+                      extensions={getLanguageConfig()}
+                      onChange={handleCodeChange}
+                      className="rounded-md border border-border bg-background text-foreground"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 min-w-[200px]">
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting}
+                      className="w-full"
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit"}
+                    </Button>
+                    {submissionStatus && (
+                      <div className="mt-2">
+                        <Badge
+                          className={
+                            submissionStatus === "success"
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }
+                        >
+                          {submissionStatus === "success"
+                            ? "Accepted"
+                            : "Wrong Answer"}
+                        </Badge>
+                      </div>
+                    )}
+                    {testResults.length > 0 && (
+                      <div className="mt-2">
+                        <div className="font-semibold mb-1">Test Results:</div>
+                        <ul className="space-y-1">
+                          {testResults.map((result, idx) => (
+                            <li key={idx} className="flex items-center gap-2">
+                              {result.passed ? (
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-red-500" />
+                              )}
+                              <span>
+                                {result.name}:{" "}
+                                {result.passed ? "Passed" : "Failed"}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>
