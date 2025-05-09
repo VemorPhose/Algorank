@@ -18,27 +18,39 @@ import SignOut from "./SignOut";
 
 function Header() {
   const [user] = useAuthState(auth);
-  const [theme, setTheme] = useState(
-    localStorage.getItem("theme") || "synthwave"
-  );
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.theme === "dark" ||
+        (!("theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ? "dark"
+        : "light";
+    }
+    return "light";
+  });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.theme = "dark";
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.theme = "light";
+    }
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === "synthwave" ? "nord" : "synthwave");
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
     <>
-      <header className="border-b">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo/Website Name */}
-            <Link to="/" className="text-2xl font-sans">
+            <Link to="/" className="text-2xl font-sans text-foreground">
               AlgoRank
             </Link>
 
@@ -46,19 +58,19 @@ function Header() {
             <nav className="hidden md:flex items-center space-x-6">
               <Link
                 to="/problems"
-                className="text-sm font-medium hover:text-primary"
+                className="text-sm font-medium text-foreground/60 hover:text-foreground/80"
               >
                 Problems
               </Link>
               <Link
                 to="/contests"
-                className="text-sm font-medium hover:text-primary"
+                className="text-sm font-medium text-foreground/60 hover:text-foreground/80"
               >
                 Contests
               </Link>
               <Link
                 to="/profile"
-                className="text-sm font-medium hover:text-primary"
+                className="text-sm font-medium text-foreground/60 hover:text-foreground/80"
               >
                 Profile
               </Link>
@@ -67,17 +79,16 @@ function Header() {
             {/* Auth Section */}
             <div className="hidden md:flex items-center space-x-4">
               {/* Theme Toggle */}
-              <button
-                className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
-                aria-label="Toggle theme"
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={toggleTheme}
+                className="h-9 w-9 text-foreground"
               >
-                {theme === "synthwave" ? (
-                  <Moon className="h-6 w-6 text-gray-800 dark:text-gray-200" />
-                ) : (
-                  <Sun className="h-6 w-6 text-yellow-500" />
-                )}
-              </button>
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -129,7 +140,7 @@ function Header() {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden"
+              className="md:hidden text-foreground"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -139,31 +150,31 @@ function Header() {
 
           {/* Mobile Navigation */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 space-y-4">
+            <div className="md:hidden py-4 space-y-4 bg-background border-b">
               <Link
                 to="/problems"
-                className="block py-2 text-sm font-medium hover:text-primary"
+                className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Problems
               </Link>
               <Link
                 to="/contests"
-                className="block py-2 text-sm font-medium hover:text-primary"
+                className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contests
               </Link>
               <Link
                 to="/leaderboard"
-                className="block py-2 text-sm font-medium hover:text-primary"
+                className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Leaderboard
               </Link>
               <Link
                 to="/profile"
-                className="block py-2 text-sm font-medium hover:text-primary"
+                className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Profile
@@ -171,27 +182,27 @@ function Header() {
 
               {/* Mobile Auth Section */}
               {user ? (
-                <div className="pt-4 border-t">
+                <div className="pt-4 border-t border-border">
                   <Link
                     to="/profile"
-                    className="block py-2 text-sm font-medium hover:text-primary"
+                    className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/settings"
-                    className="block py-2 text-sm font-medium hover:text-primary"
+                    className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Settings
                   </Link>
-                  <div className="block py-2 text-sm font-medium hover:text-primary w-full text-left">
+                  <div className="block py-2 text-sm font-medium text-foreground/60 hover:text-foreground/80 w-full text-left">
                     <SignOut />
                   </div>
                 </div>
               ) : (
-                <div className="pt-4 border-t flex flex-col space-y-2">
+                <div className="pt-4 border-t border-border flex flex-col space-y-2">
                   <SignIn />
                 </div>
               )}
