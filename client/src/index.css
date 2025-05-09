@@ -83,6 +83,5 @@ a {
 div {
   border: none;
 }
-
 /* Add dark mode variant support */
 @custom-variant dark (&:where(.dark, .dark *));

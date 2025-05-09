@@ -16,11 +16,11 @@ import Footer from "../components/Footer.jsx";
 
 function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <div className="flex flex-col items-center">
         {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-background">
           <div className="container px-4 md:px-6 lg:px-8 xl:px-12 min-w-full">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:gap-16">
               <motion.div
@@ -33,7 +33,7 @@ function Home() {
                   <Badge className="inline-block" variant="outline">
                     New Platform Launch
                   </Badge>
-                  <h1 className="text-3xl font-sans tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                  <h1 className="text-3xl font-sans tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-foreground">
                     Master Algorithms. Solve Problems. Win Contests.
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
@@ -96,88 +96,50 @@ function Home() {
 // Animated Code Editor Component
 function CodeEditorAnimation() {
   return (
-    <div className="relative w-full max-w-[600px] rounded-xl border bg-background p-2 shadow-xl">
-      <div className="flex items-center justify-between border-b pb-2">
+    <div className="relative w-full max-w-[600px] rounded-xl border border-border bg-card p-2 shadow-xl">
+      <div className="flex items-center justify-between border-b border-border pb-2">
         <div className="flex space-x-1.5">
           <div className="h-3 w-3 rounded-full bg-red-500"></div>
           <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
           <div className="h-3 w-3 rounded-full bg-green-500"></div>
         </div>
-        <div className="text-xs font-medium">problem.py</div>
+        <div className="text-xs font-medium text-muted-foreground">
+          problem.py
+        </div>
         <div className="w-4"></div>
       </div>
-      <div className="mt-4 space-y-2 overflow-hidden font-mono text-sm">
-        <motion.div
-          className="text-green-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          # Two Sum Problem
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
+      <div className="bg-background p-4 rounded-b-xl text-foreground font-mono text-sm min-h-[200px]">
+        <span className="text-green-400"># Two Sum Problem</span>
+        <br />
+        <span className="text-muted-foreground">
           def two_sum(nums, target):
-        </motion.div>
-        <motion.div
-          className="pl-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1 }}
-        >
-          hash_map = {}
-        </motion.div>
-        <motion.div
-          className="pl-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4 }}
-        >
+        </span>
+        <br />
+        <span className="text-muted-foreground"> hash_map =</span>
+        <br />
+        <span className="text-muted-foreground">
+          {" "}
           for i, num in enumerate(nums):
-        </motion.div>
-        <motion.div
-          className="pl-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.7 }}
-        >
+        </span>
+        <br />
+        <span className="text-muted-foreground">
+          {" "}
           complement = target - num
-        </motion.div>
-        <motion.div
-          className="pl-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.0 }}
-        >
+        </span>
+        <br />
+        <span className="text-muted-foreground">
+          {" "}
           if complement in hash_map:
-        </motion.div>
-        <motion.div
-          className="pl-12"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.3 }}
-        >
+        </span>
+        <br />
+        <span className="text-muted-foreground">
+          {" "}
           return [hash_map[complement], i]
-        </motion.div>
-        <motion.div
-          className="pl-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.6 }}
-        >
-          hash_map[num] = i
-        </motion.div>
-        <motion.div
-          className="pl-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.9 }}
-        >
-          return []
-        </motion.div>
+        </span>
+        <br />
+        <span className="text-muted-foreground"> hash_map[num] = i</span>
+        <br />
+        <span className="text-muted-foreground"> return []</span>
       </div>
       <motion.div
         className="mt-4 rounded bg-green-100 p-2 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-400"
@@ -235,7 +197,7 @@ function FeaturesSection() {
       <div className="container px-4 md:px-6 min-w-full">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
-            <h2 className="text-3xl font-sans tracking-tighter sm:text-5xl">
+            <h2 className="text-3xl font-sans tracking-tighter sm:text-5xl text-foreground">
               Features that set us apart
             </h2>
             <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -255,12 +217,14 @@ function FeaturesSection() {
               initial="hidden"
               animate={controls}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="flex flex-col items-center space-y-4 rounded-lg border p-6 shadow-sm"
+              className="flex flex-col items-center space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm"
             >
               <div className="rounded-full bg-primary/10 p-4">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-sans">{feature.title}</h3>
+              <h3 className="text-xl font-sans text-foreground">
+                {feature.title}
+              </h3>
               <p className="text-center text-muted-foreground">
                 {feature.description}
               </p>
@@ -285,7 +249,7 @@ function StatsSection() {
   ];
 
   return (
-    <section ref={ref} className="w-full py-12 md:py-24">
+    <section ref={ref} className="w-full py-12 md:py-24 bg-background">
       <div className="container px-4 md:px-6 lg:px-16 min-w-full">
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {stats.map((stat, index) => (
@@ -298,7 +262,7 @@ function StatsSection() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="flex flex-col items-center justify-center space-y-2 text-center"
             >
-              <div className="text-3xl font-sans sm:text-4xl md:text-5xl">
+              <div className="text-3xl font-sans sm:text-4xl md:text-5xl text-foreground">
                 {stat.value}
               </div>
               <div className="text-sm font-medium text-muted-foreground sm:text-base">
@@ -319,7 +283,7 @@ function CTASection() {
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
-            <h2 className="text-3xl font-sans tracking-tighter sm:text-4xl md:text-5xl">
+            <h2 className="text-3xl font-sans tracking-tighter sm:text-4xl md:text-5xl text-foreground">
               Ready to start coding?
             </h2>
             <p className="max-w-[600px] text-muted-foreground md:text-xl">
