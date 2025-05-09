@@ -1,5 +1,5 @@
 import { useParams, useSearchParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
@@ -35,13 +35,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Skeleton } from "../components/ui/skeleton";
-import {
-  ChevronLeft,
-  Code,
-  CheckCircle2,
-  XCircle,
-  RotateCcw,
-} from "lucide-react";
+import { ChevronLeft, Code, CheckCircle2, XCircle } from "lucide-react";
 
 function getDifficultyColor(difficulty) {
   if (!difficulty || typeof difficulty !== "string") return "bg-gray-500";
@@ -54,30 +48,6 @@ function getDifficultyColor(difficulty) {
       return "bg-red-500 hover:bg-red-600";
     default:
       return "bg-gray-500 hover:bg-gray-600";
-  }
-}
-
-function getStatusInfo(status) {
-  switch (status) {
-    case "solved":
-      return {
-        color: "text-green-500",
-        icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
-        text: "Solved",
-      };
-    case "attempted":
-      return {
-        color: "text-yellow-500",
-        icon: <RotateCcw className="h-5 w-5 text-yellow-500" />,
-        text: "Attempted",
-      };
-    case "unsolved":
-    default:
-      return {
-        color: "text-muted-foreground",
-        icon: <XCircle className="h-5 w-5 text-muted-foreground" />,
-        text: "Not Attempted",
-      };
   }
 }
 
@@ -95,10 +65,6 @@ function ProblemPage() {
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testResults, setTestResults] = useState([]);
-  const dividerRef = useRef(null);
-  const leftPanelRef = useRef(null);
-  const rightPanelRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [boilerplatesLoaded, setBoilerplatesLoaded] = useState(false);
 
   // Auth listener
@@ -138,7 +104,7 @@ function ProblemPage() {
           java: boilerplates[2],
         });
         setBoilerplatesLoaded(true);
-      } catch (error) {
+      } catch {
         setCodeState({
           cpp: "// C++ code here...",
           python: "# Python code here...",
@@ -159,7 +125,7 @@ function ProblemPage() {
         if (!response.ok) throw new Error("Problem not found");
         const data = await response.json();
         setContent(data.description);
-      } catch (error) {
+      } catch {
         setContent("Problem not found.");
       }
     };
@@ -171,18 +137,6 @@ function ProblemPage() {
     setLanguage(lang);
   };
 
-  const getLanguageExtension = () => {
-    switch (language) {
-      case "python":
-        return python();
-      case "java":
-        return java();
-      case "cpp":
-      default:
-        return cpp();
-    }
-  };
-
   const handleCodeChange = (value) => {
     setCodeState((prev) => ({
       ...prev,
@@ -190,28 +144,6 @@ function ProblemPage() {
     }));
   };
 
-  const startDragging = () => setIsDragging(true);
-  const stopDragging = () => setIsDragging(false);
-  const handleDragging = (e) => {
-    if (!isDragging) return;
-    const containerWidth = dividerRef.current.parentNode.offsetWidth;
-    const newLeftWidth = (e.clientX / containerWidth) * 100;
-    if (newLeftWidth > 20 && newLeftWidth < 80) {
-      leftPanelRef.current.style.width = `${newLeftWidth}%`;
-      rightPanelRef.current.style.width = `${100 - newLeftWidth}%`;
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("mousemove", handleDragging);
-    window.addEventListener("mouseup", stopDragging);
-    return () => {
-      window.removeEventListener("mousemove", handleDragging);
-      window.removeEventListener("mouseup", stopDragging);
-    };
-  }, [isDragging]);
-
-  // Add submission handler
   const handleSubmit = async () => {
     if (!user) {
       alert("Please sign in to submit your solution");
@@ -270,7 +202,7 @@ function ProblemPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1 bg-background py-8 px-2 md:px-8">
-        <div className="max-w-6xl mx-auto space-y-6">
+        <div className="max-w-5xl mx-auto space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Button
               variant="ghost"
@@ -281,13 +213,9 @@ function ProblemPage() {
             </Button>
             <h1 className="text-2xl font-bold tracking-tight">Problem</h1>
           </div>
-          <div className="flex flex-col md:flex-row gap-6 w-full min-h-[600px]">
-            {/* Left Panel: Problem Description */}
-            <Card
-              ref={leftPanelRef}
-              className="flex-1 min-w-[320px] bg-card border border-border rounded-lg shadow-sm flex flex-col"
-              style={{ width: "50%", minHeight: 500, transition: "width 0.2s" }}
-            >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            {/* Problem Description Card */}
+            <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
               <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b">
                 <div>
                   <CardTitle className="text-xl md:text-2xl font-bold">
@@ -329,28 +257,8 @@ function ProblemPage() {
                 </Tabs>
               </CardContent>
             </Card>
-            {/* Draggable Divider */}
-            <div
-              ref={dividerRef}
-              onMouseDown={startDragging}
-              className="w-2 cursor-col-resize flex flex-col justify-center select-none"
-              style={{
-                cursor: "col-resize",
-                userSelect: "none",
-                background:
-                  "linear-gradient(to bottom, #e5e7eb 40%, #d1d5db 60%)",
-                borderRadius: "4px",
-                minHeight: 500,
-              }}
-            >
-              <div className="mx-auto w-1 h-16 bg-gray-300 rounded" />
-            </div>
-            {/* Right Panel: Code Editor */}
-            <Card
-              ref={rightPanelRef}
-              className="flex-1 min-w-[320px] bg-card border border-border rounded-lg shadow-sm flex flex-col"
-              style={{ width: "50%", minHeight: 500, transition: "width 0.2s" }}
-            >
+            {/* Code Editor Card */}
+            <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
               <CardHeader className="border-b">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                   <Code className="h-5 w-5" /> Code Editor
