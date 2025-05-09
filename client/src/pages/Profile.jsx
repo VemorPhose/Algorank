@@ -81,8 +81,10 @@ function Profile() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
-          <div className="text-center py-10 text-white">Loading...</div>
+        <main className="flex-1 flex items-center justify-center bg-background">
+          <div className="text-center py-10 text-muted-foreground">
+            Loading...
+          </div>
         </main>
         <Footer />
       </div>
@@ -93,27 +95,25 @@ function Profile() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
-          <div className="flex items-center justify-center w-full">
-            <Card className="bg-gray-800 border-gray-700 max-w-md">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white">
-                  Forgot to Log In?
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Log in to view your AlgoRank profile and stats.
-                </CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Button
-                  onClick={() => navigate("/login")}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Go to Login
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
+        <main className="flex-1 flex items-center justify-center bg-background">
+          <Card className="bg-card border-border max-w-md">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold">
+                Forgot to Log In?
+              </CardTitle>
+              <CardContent className="text-muted-foreground">
+                Log in to view your AlgoRank profile and stats.
+              </CardContent>
+            </CardHeader>
+            <CardFooter>
+              <Button
+                onClick={() => navigate("/login")}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Go to Login
+              </Button>
+            </CardFooter>
+          </Card>
         </main>
         <Footer />
       </div>
@@ -123,8 +123,8 @@ function Profile() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
-        <div className="space-y-6">
+      <main className="flex-1 bg-background py-8 px-2 md:px-8">
+        <div className="max-w-5xl mx-auto space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <Avatar className="h-24 w-24">
@@ -139,10 +139,10 @@ function Profile() {
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-white">
+                <h1 className="text-2xl font-bold">
                   {user.displayName || user.email}
                 </h1>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   Member since{" "}
                   {new Date(user.metadata.creationTime).toLocaleDateString()}
                 </p>
@@ -151,148 +151,103 @@ function Profile() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   Problems Solved
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
-                  {stats.problemsSolved}
-                </div>
+                <div className="text-2xl font-bold">{stats.problemsSolved}</div>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   Current Rank
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
-                  {stats.rank}
-                </div>
+                <div className="text-2xl font-bold">{stats.rank}</div>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   Total Points
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
-                  {stats.points}
-                </div>
+                <div className="text-2xl font-bold">{stats.points}</div>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   Day Streak
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
-                  {stats.streak}
-                </div>
+                <div className="text-2xl font-bold">{stats.streak}</div>
               </CardContent>
             </Card>
           </div>
 
-          <Tabs defaultValue="activity" className="space-y-4">
-            <TabsList className="bg-gray-800">
-              <TabsTrigger value="activity" className="text-white">
-                Recent Activity
-              </TabsTrigger>
-              <TabsTrigger value="submissions" className="text-white">
-                Submissions
-              </TabsTrigger>
-              <TabsTrigger value="contests" className="text-white">
-                Contests
-              </TabsTrigger>
+          <Tabs defaultValue="activity" className="w-full mt-6">
+            <TabsList>
+              <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+              <TabsTrigger value="submissions">Submissions</TabsTrigger>
+              <TabsTrigger value="contests">Contest History</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="activity" className="space-y-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-gray-400 text-center">
-                    No recent activity to show
-                  </div>
-                </CardContent>
-              </Card>
+            <TabsContent value="activity">
+              <div className="text-muted-foreground">
+                Recent activity coming soon.
+              </div>
             </TabsContent>
 
-            <TabsContent value="submissions" className="space-y-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">
-                    Recent Submissions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-gray-700">
-                        <TableHead className="text-gray-400">Problem</TableHead>
-                        <TableHead className="text-gray-400">Status</TableHead>
-                        <TableHead className="text-gray-400">
-                          Language
-                        </TableHead>
-                        <TableHead className="text-gray-400">Runtime</TableHead>
-                        <TableHead className="text-gray-400">Memory</TableHead>
-                        <TableHead className="text-gray-400">
-                          Submitted
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow className="border-gray-700">
-                        <TableCell
-                          className="text-gray-400 text-center"
-                          colSpan={6}
-                        >
-                          No submissions yet
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+            <TabsContent value="submissions">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Problem</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Language</TableHead>
+                    <TableHead>Submitted</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* Example row, replace with actual data if available */}
+                  <TableRow>
+                    <TableCell>Two Sum</TableCell>
+                    <TableCell className="text-green-500">Accepted</TableCell>
+                    <TableCell>Python</TableCell>
+                    <TableCell>2025-03-12</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </TabsContent>
 
-            <TabsContent value="contests" className="space-y-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Contest History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-gray-700">
-                        <TableHead className="text-gray-400">Contest</TableHead>
-                        <TableHead className="text-gray-400">Rank</TableHead>
-                        <TableHead className="text-gray-400">Score</TableHead>
-                        <TableHead className="text-gray-400">Date</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow className="border-gray-700">
-                        <TableCell
-                          className="text-gray-400 text-center"
-                          colSpan={4}
-                        >
-                          No contest history yet
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+            <TabsContent value="contests">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Contest</TableHead>
+                    <TableHead>Rank</TableHead>
+                    <TableHead>Score</TableHead>
+                    <TableHead>Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* Example row, replace with actual data if available */}
+                  <TableRow>
+                    <TableCell>Weekly Challenge #41</TableCell>
+                    <TableCell>56</TableCell>
+                    <TableCell>1850</TableCell>
+                    <TableCell>2025-03-08</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </TabsContent>
           </Tabs>
         </div>

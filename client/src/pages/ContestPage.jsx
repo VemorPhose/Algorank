@@ -162,8 +162,10 @@ function ContestPage() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
-          <div className="text-center py-10 text-white">Loading...</div>
+        <main className="flex-1 flex items-center justify-center bg-background">
+          <div className="text-center py-10 text-muted-foreground">
+            Loading...
+          </div>
         </main>
         <Footer />
       </div>
@@ -174,7 +176,7 @@ function ContestPage() {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
+        <main className="flex-1 flex items-center justify-center bg-background">
           <div className="text-center py-10 text-red-500">{error}</div>
         </main>
         <Footer />
@@ -185,153 +187,67 @@ function ContestPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
+      <main className="flex-1 bg-background py-8 px-2 md:px-8">
         {contest && canAccessContest() ? (
-          <div className="space-y-6">
+          <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold text-white">
-                  {contest.title}
-                </h1>
-                <p className="text-gray-400">{contest.description}</p>
+                <h1 className="text-3xl font-bold">{contest.title}</h1>
+                <p className="text-muted-foreground">{contest.description}</p>
               </div>
               <div className="flex items-center gap-4">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5" />
+                  Your Score: {userScore}
+                </Button>
                 <Button
-                  variant="outline"
-                  className="text-white border-gray-600 hover:bg-gray-700"
+                  variant={notificationsEnabled ? "default" : "outline"}
+                  className="flex items-center gap-2"
                   onClick={handleNotificationsToggle}
                 >
                   {notificationsEnabled ? (
-                    <>
-                      <BellOff className="h-4 w-4 mr-2" />
-                      Disable Notifications
-                    </>
+                    <Bell className="h-5 w-5" />
                   ) : (
-                    <>
-                      <Bell className="h-4 w-4 mr-2" />
-                      Enable Notifications
-                    </>
+                    <BellOff className="h-5 w-5" />
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-white border-gray-600 hover:bg-gray-700"
-                  asChild
-                >
-                  <Link to={`/contest/${contestId}/standings`}>
-                    <Trophy className="h-4 w-4 mr-2" />
-                    View Standings
-                  </Link>
+                  {notificationsEnabled
+                    ? "Notifications On"
+                    : "Notifications Off"}
                 </Button>
               </div>
             </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">
-                    Time Remaining
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">
-                    {getTimeRemaining()}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">
-                    Your Score
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">
-                    {userScore}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">
-                    Problems
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">
-                    {problems.length}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">
-                    Participants
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">
-                    {contest.participants || 0}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Tabs defaultValue="problems" className="space-y-4">
-              <TabsList className="bg-gray-800">
-                <TabsTrigger value="problems" className="text-white">
-                  Problems
-                </TabsTrigger>
-                <TabsTrigger value="rules" className="text-white">
-                  Rules
-                </TabsTrigger>
-                <TabsTrigger value="prizes" className="text-white">
-                  Prizes
-                </TabsTrigger>
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full mt-6"
+            >
+              <TabsList>
+                <TabsTrigger value="problems">Problems</TabsTrigger>
+                <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+                <TabsTrigger value="rules">Rules</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="problems" className="space-y-4">
-                <Card className="bg-gray-800 border-gray-700">
+              <TabsContent value="problems">
+                <Card className="bg-card border-border">
                   <CardHeader>
-                    <CardTitle className="text-white">Problems</CardTitle>
+                    <CardTitle>Problems</CardTitle>
+                    <CardDescription>Problems for this contest</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
-                        <TableRow className="border-gray-700">
-                          <TableHead className="text-gray-400">Code</TableHead>
-                          <TableHead className="text-gray-400">
-                            Problem
-                          </TableHead>
-                          <TableHead className="text-gray-400">
-                            Difficulty
-                          </TableHead>
-                          <TableHead className="text-gray-400">
-                            Points
-                          </TableHead>
-                          <TableHead className="text-gray-400">
-                            Solved By
-                          </TableHead>
-                          <TableHead className="text-gray-400">
-                            Status
-                          </TableHead>
-                          <TableHead className="text-gray-400">
-                            Actions
-                          </TableHead>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Difficulty</TableHead>
+                          <TableHead>Points</TableHead>
+                          <TableHead>Solved</TableHead>
+                          <TableHead>Submission Rate</TableHead>
+                          <TableHead></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {problems.map((problem) => (
-                          <TableRow
-                            key={problem.problem_id}
-                            className="border-gray-700"
-                          >
-                            <TableCell className="text-white">
-                              {problem.problem_id}
-                            </TableCell>
-                            <TableCell className="text-white">
-                              {problem.title}
-                            </TableCell>
+                          <TableRow key={problem.id}>
+                            <TableCell>{problem.title}</TableCell>
                             <TableCell>
                               <Badge
                                 className={getDifficultyColor(
@@ -341,29 +257,13 @@ function ContestPage() {
                                 {problem.difficulty}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-white">
-                              {problem.points}
-                            </TableCell>
-                            <TableCell className="text-white">
-                              {problem.solved_count || 0}
-                            </TableCell>
+                            <TableCell>{problem.points}</TableCell>
+                            <TableCell>{problem.solvedCount}</TableCell>
+                            <TableCell>{problem.submissionRate}%</TableCell>
                             <TableCell>
-                              <Badge
-                                className={getStatusBadgeColor(
-                                  problem.is_solved ? "solved" : "unsolved"
-                                )}
-                              >
-                                {problem.is_solved ? "Solved" : "Unsolved"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="outline"
-                                className="text-white border-gray-600 hover:bg-gray-700"
-                                asChild
-                              >
+                              <Button variant="outline" asChild>
                                 <Link
-                                  to={`/problem/${problem.problem_id}?contestId=${contestId}`}
+                                  to={`/problems/${problem.id}?contestId=${contestId}`}
                                 >
                                   Solve
                                 </Link>
@@ -376,14 +276,50 @@ function ContestPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-
-              <TabsContent value="rules" className="space-y-4">
-                <Card className="bg-gray-800 border-gray-700">
+              <TabsContent value="leaderboard">
+                <Card className="bg-card border-border">
                   <CardHeader>
-                    <CardTitle className="text-white">Contest Rules</CardTitle>
+                    <CardTitle>Leaderboard</CardTitle>
+                    <CardDescription>Top participants</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ul className="list-disc list-inside space-y-2 text-gray-400">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Rank</TableHead>
+                            <TableHead>User</TableHead>
+                            <TableHead>Score</TableHead>
+                            <TableHead>Solved</TableHead>
+                            <TableHead>Total Time</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {/* Example row, replace with actual data if available */}
+                          <TableRow>
+                            <TableCell>1</TableCell>
+                            <TableCell>codemaster</TableCell>
+                            <TableCell>1100</TableCell>
+                            <TableCell>5</TableCell>
+                            <TableCell>1h 23m</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="rules">
+                <Card className="bg-card border-border">
+                  <CardHeader>
+                    <CardTitle>Contest Rules</CardTitle>
+                    <CardDescription>
+                      Read the rules before participating
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                      {/* Example rules, replace with actual data if available */}
                       <li>You must solve the problems independently.</li>
                       <li>
                         External resources like documentation are allowed, but
@@ -402,31 +338,18 @@ function ContestPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-
-              <TabsContent value="prizes" className="space-y-4">
-                <Card className="bg-gray-800 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">Prizes</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="list-disc list-inside space-y-2 text-gray-400">
-                      <li>Top 3 participants will receive special badges</li>
-                      <li>
-                        All participants will earn points based on their
-                        performance
-                      </li>
-                      <li>
-                        Additional prizes may be announced during the contest
-                      </li>
-                    </ul>
-                  </CardContent>
-                </Card>
-              </TabsContent>
             </Tabs>
           </div>
         ) : (
-          <div className="text-center py-10 text-red-500">
-            Contest is not accessible yet. Please wait until the start time.
+          <div className="max-w-2xl mx-auto">
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle>Contest Not Started</CardTitle>
+                <CardDescription>
+                  The contest has not started yet. Please check back later.
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         )}
       </main>

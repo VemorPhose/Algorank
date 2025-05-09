@@ -31,6 +31,13 @@ import {
   Award,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 
 // Helper function to format date
 function formatDate(dateString) {
@@ -237,13 +244,13 @@ function Contests() {
     if (!difficulty || typeof difficulty !== "string") return "bg-gray-500";
     switch (difficulty.toLowerCase()) {
       case "easy":
-        return "bg-green-500";
+        return "bg-green-500 hover:bg-green-600";
       case "medium":
-        return "bg-yellow-500";
+        return "bg-yellow-500 hover:bg-yellow-600";
       case "hard":
-        return "bg-red-500";
+        return "bg-red-500 hover:bg-red-600";
       default:
-        return "bg-gray-500";
+        return "bg-gray-500 hover:bg-gray-600";
     }
   };
 
@@ -272,18 +279,18 @@ function Contests() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen my-0">
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
-        <div className="space-y-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-bold text-white">Contests</h1>
-              <p className="text-gray-400">
+      <main className="flex-1 bg-background py-8 px-2 md:px-8">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Contests</h1>
+              <p className="text-muted-foreground">
                 Participate in coding contests and improve your skills
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
@@ -291,39 +298,33 @@ function Contests() {
                   placeholder="Search contests..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-gray-800 border-gray-700 text-white"
+                  className="pl-10 bg-background border-border text-foreground"
                 />
               </div>
             </div>
           </div>
-
-          <Tabs defaultValue="all" className="space-y-4">
-            <TabsList className="bg-gray-800">
-              <TabsTrigger value="all" className="text-white">
-                All Contests
-              </TabsTrigger>
-              <TabsTrigger value="active" className="text-white">
-                Active
-              </TabsTrigger>
-              <TabsTrigger value="upcoming" className="text-white">
-                Upcoming
-              </TabsTrigger>
-              <TabsTrigger value="past" className="text-white">
-                Past
-              </TabsTrigger>
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
+            <TabsList className="bg-card">
+              <TabsTrigger value="all">All Contests</TabsTrigger>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+              <TabsTrigger value="past">Past</TabsTrigger>
             </TabsList>
-
             <TabsContent value="all" className="space-y-4">
               {Object.entries(contests).map(([category, categoryContests]) => (
                 <div key={category} className="space-y-4">
-                  <h2 className="text-xl font-semibold text-white capitalize">
+                  <h2 className="text-xl font-semibold capitalize">
                     {category} Contests
                   </h2>
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {categoryContests.map((contest) => (
                       <Card
                         key={contest.contest_id}
-                        className="bg-gray-800 border-gray-700"
+                        className="bg-card border-border"
                       >
                         <CardHeader>
                           <div className="flex items-center justify-between">
@@ -340,15 +341,15 @@ function Contests() {
                               {contest.difficulty}
                             </Badge>
                           </div>
-                          <CardTitle className="text-white mt-2">
+                          <CardTitle className="mt-2">
                             {contest.title}
                           </CardTitle>
-                          <CardDescription className="text-gray-400">
+                          <CardDescription>
                             {contest.description}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-2 text-sm text-gray-400">
+                          <div className="space-y-2 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4" />
                               <span>{formatDate(contest.start_time)}</span>
@@ -366,11 +367,7 @@ function Contests() {
                           </div>
                         </CardContent>
                         <CardFooter className="flex justify-between">
-                          <Button
-                            variant="outline"
-                            className="text-white border-gray-600 hover:bg-gray-700"
-                            asChild
-                          >
+                          <Button variant="outline" asChild>
                             <Link to={`/contest/${contest.contest_id}`}>
                               View Details
                             </Link>
@@ -394,14 +391,13 @@ function Contests() {
                 </div>
               ))}
             </TabsContent>
-
             {["active", "upcoming", "past"].map((tab) => (
               <TabsContent key={tab} value={tab} className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {contests[tab === "past" ? "past" : tab].map((contest) => (
                     <Card
                       key={contest.contest_id}
-                      className="bg-gray-800 border-gray-700"
+                      className="bg-card border-border"
                     >
                       <CardHeader>
                         <div className="flex items-center justify-between">
@@ -418,15 +414,11 @@ function Contests() {
                             {contest.difficulty}
                           </Badge>
                         </div>
-                        <CardTitle className="text-white mt-2">
-                          {contest.title}
-                        </CardTitle>
-                        <CardDescription className="text-gray-400">
-                          {contest.description}
-                        </CardDescription>
+                        <CardTitle className="mt-2">{contest.title}</CardTitle>
+                        <CardDescription>{contest.description}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-2 text-sm text-gray-400">
+                        <div className="space-y-2 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
                             <span>{formatDate(contest.start_time)}</span>
@@ -444,11 +436,7 @@ function Contests() {
                         </div>
                       </CardContent>
                       <CardFooter className="flex justify-between">
-                        <Button
-                          variant="outline"
-                          className="text-white border-gray-600 hover:bg-gray-700"
-                          asChild
-                        >
+                        <Button variant="outline" asChild>
                           <Link to={`/contest/${contest.contest_id}`}>
                             View Details
                           </Link>

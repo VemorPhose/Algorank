@@ -74,3 +74,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove underline from all links globally */
+a {
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  text-decoration: underline;
+}
