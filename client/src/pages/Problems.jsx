@@ -316,7 +316,7 @@ function Problems() {
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder="Search problems..."
+                    placeholder="    Search problems..."
                     className="w-full rounded-md pl-8"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

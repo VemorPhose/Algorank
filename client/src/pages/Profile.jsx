@@ -79,7 +79,7 @@ function Profile() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
         <main className="flex-1 flex items-center justify-center bg-background">
           <div className="text-center py-10 text-muted-foreground">
@@ -93,12 +93,12 @@ function Profile() {
 
   if (!user) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
         <main className="flex-1 flex items-center justify-center bg-background">
-          <Card className="bg-card border-border max-w-md">
+          <Card className="bg-card border border-border dark:border-[#27272a] max-w-md">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold">
+              <CardTitle className="text-2xl font-bold text-card-foreground">
                 Forgot to Log In?
               </CardTitle>
               <CardContent className="text-muted-foreground">
@@ -108,7 +108,7 @@ function Profile() {
             <CardFooter>
               <Button
                 onClick={() => navigate("/login")}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"
               >
                 Go to Login
               </Button>
@@ -121,7 +121,7 @@ function Profile() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-1 bg-background py-8 px-2 md:px-8">
         <div className="max-w-5xl mx-auto space-y-6">
@@ -132,14 +132,14 @@ function Profile() {
                   src={user.photoURL}
                   alt={user.displayName || user.email}
                 />
-                <AvatarFallback className="bg-blue-600 text-white text-2xl">
+                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
                   {user.displayName
                     ? user.displayName.charAt(0).toUpperCase()
                     : user.email.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-2xl font-bold text-foreground">
                   {user.displayName || user.email}
                 </h1>
                 <p className="text-muted-foreground">
@@ -151,50 +151,58 @@ function Profile() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-card border-border">
+            <Card className="bg-card border border-border dark:border-[#27272a]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Problems Solved
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.problemsSolved}</div>
+                <div className="text-2xl font-bold text-card-foreground">
+                  {stats.problemsSolved}
+                </div>
               </CardContent>
             </Card>
-            <Card className="bg-card border-border">
+            <Card className="bg-card border border-border dark:border-[#27272a]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Current Rank
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.rank}</div>
+                <div className="text-2xl font-bold text-card-foreground">
+                  {stats.rank}
+                </div>
               </CardContent>
             </Card>
-            <Card className="bg-card border-border">
+            <Card className="bg-card border border-border dark:border-[#27272a]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Total Points
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.points}</div>
+                <div className="text-2xl font-bold text-card-foreground">
+                  {stats.points}
+                </div>
               </CardContent>
             </Card>
-            <Card className="bg-card border-border">
+            <Card className="bg-card border border-border dark:border-[#27272a]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Day Streak
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.streak}</div>
+                <div className="text-2xl font-bold text-card-foreground">
+                  {stats.streak}
+                </div>
               </CardContent>
             </Card>
           </div>
 
           <Tabs defaultValue="activity" className="w-full mt-6">
-            <TabsList>
+            <TabsList className="bg-card">
               <TabsTrigger value="activity">Recent Activity</TabsTrigger>
               <TabsTrigger value="submissions">Submissions</TabsTrigger>
               <TabsTrigger value="contests">Contest History</TabsTrigger>

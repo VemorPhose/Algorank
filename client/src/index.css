@@ -75,13 +75,23 @@
   }
 }
 
-/* Remove underline from all links globally */
-a {
-  text-decoration: none;
+/* Remove underline from all links globally, including react-router Link */
+a,
+a:visited,
+a:active,
+a:focus,
+a:hover,
+.link,
+.link:visited,
+.link:active,
+.link:focus,
+.link:hover {
+  text-decoration: none !important;
 }
 
 div {
   border: none;
 }
+
 /* Add dark mode variant support */
 @custom-variant dark (&:where(.dark, .dark *));
