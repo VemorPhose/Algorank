@@ -88,7 +88,9 @@ function ProblemPage() {
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/problems/${problemId}`);
+        const response = await fetch(
+          `http://localhost:5000/api/problems/${problemId}`
+        );
         if (!response.ok) throw new Error("Problem not found");
         const data = await response.json();
         setContent(data.description);
@@ -152,7 +154,7 @@ function ProblemPage() {
       return;
     }
 
-    const contestId = searchParams.get('contestId'); // Get contestId from URL
+    const contestId = searchParams.get("contestId"); // Get contestId from URL
 
     const submissionData = {
       problemId,
@@ -160,7 +162,7 @@ function ProblemPage() {
       submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       code: codeState[language],
       language,
-      contestId // Add this
+      contestId, // Add this
     };
 
     console.log("Submitting:", submissionData); // Add debug logging
@@ -177,7 +179,7 @@ function ProblemPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Submission failed');
+        throw new Error(errorData.error || "Submission failed");
       }
 
       const result = await response.json();
@@ -303,7 +305,9 @@ function ProblemPage() {
                   <div className="w-1/4">Test Case {test.number}</div>
                   <div
                     className={`w-1/2 ${
-                      test.verdict === "Accepted" ? "text-green-500" : "text-red-500"
+                      test.verdict === "Accepted"
+                        ? "text-green-500"
+                        : "text-red-500"
                     }`}
                   >
                     {test.verdict}
