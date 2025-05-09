@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import Header from "../components/Header.jsx";
@@ -12,11 +12,78 @@ import { indentUnit } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { useSearchParams } from "react-router-dom"; // Add this import from react-router-dom
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Skeleton } from "../components/ui/skeleton";
+import {
+  ChevronLeft,
+  Code,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+} from "lucide-react";
+
+function getDifficultyColor(difficulty) {
+  if (!difficulty || typeof difficulty !== "string") return "bg-gray-500";
+  switch (difficulty.toLowerCase()) {
+    case "easy":
+      return "bg-green-500 hover:bg-green-600";
+    case "medium":
+      return "bg-yellow-500 hover:bg-yellow-600";
+    case "hard":
+      return "bg-red-500 hover:bg-red-600";
+    default:
+      return "bg-gray-500 hover:bg-gray-600";
+  }
+}
+
+function getStatusInfo(status) {
+  switch (status) {
+    case "solved":
+      return {
+        color: "text-green-500",
+        icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+        text: "Solved",
+      };
+    case "attempted":
+      return {
+        color: "text-yellow-500",
+        icon: <RotateCcw className="h-5 w-5 text-yellow-500" />,
+        text: "Attempted",
+      };
+    case "unsolved":
+    default:
+      return {
+        color: "text-muted-foreground",
+        icon: <XCircle className="h-5 w-5 text-muted-foreground" />,
+        text: "Not Attempted",
+      };
+  }
+}
 
 function ProblemPage() {
   const { problemId } = useParams();
-  const [searchParams] = useSearchParams(); // Add this import from react-router-dom
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
   const [content, setContent] = useState("Loading...");
   const [codeState, setCodeState] = useState({
@@ -72,8 +139,6 @@ function ProblemPage() {
         });
         setBoilerplatesLoaded(true);
       } catch (error) {
-        console.error("Error loading boilerplates:", error);
-        // Set default boilerplates if loading fails
         setCodeState({
           cpp: "// C++ code here...",
           python: "# Python code here...",
@@ -95,7 +160,6 @@ function ProblemPage() {
         const data = await response.json();
         setContent(data.description);
       } catch (error) {
-        console.error("Error fetching problem:", error);
         setContent("Problem not found.");
       }
     };
@@ -103,8 +167,8 @@ function ProblemPage() {
     fetchProblem();
   }, [problemId]);
 
-  const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);
+  const handleLanguageChange = (lang) => {
+    setLanguage(lang);
   };
 
   const getLanguageExtension = () => {
@@ -154,7 +218,7 @@ function ProblemPage() {
       return;
     }
 
-    const contestId = searchParams.get("contestId"); // Get contestId from URL
+    const contestId = searchParams.get("contestId");
 
     const submissionData = {
       problemId,
@@ -162,10 +226,8 @@ function ProblemPage() {
       submissionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       code: codeState[language],
       language,
-      contestId, // Add this
+      contestId,
     };
-
-    console.log("Submitting:", submissionData); // Add debug logging
 
     setIsSubmitting(true);
     try {
@@ -186,7 +248,6 @@ function ProblemPage() {
       setSubmissionStatus(result.status);
       setTestResults(result.testCases || []);
     } catch (error) {
-      console.error("Submission failed:", error);
       alert(error.message || "Failed to submit code");
     } finally {
       setIsSubmitting(false);
@@ -194,131 +255,183 @@ function ProblemPage() {
   };
 
   if (!boilerplatesLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 flex items-center justify-center bg-background">
+          <Skeleton className="w-full max-w-4xl h-96" />
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col min-h-screen my-0">
+    <div className="flex flex-col min-h-screen">
       <Header />
-
-      <main
-        className="flex flex-1 text-white px-10 py-0"
-        style={{ backgroundColor: "#1D2125" }}
-      >
-        {/* Left Panel - Problem Description */}
-        <div
-          ref={leftPanelRef}
-          className="p-4 my-6 overflow-y-auto"
-          style={{ width: "50%" }}
-        >
-          <h2 className="text-2xl font-bold mb-4">
-            {problemId.replace(/-/g, " ").toUpperCase()}
-          </h2>
-          <ReactMarkdown>{content}</ReactMarkdown>
-        </div>
-
-        {/* Divider */}
-        <div
-          ref={dividerRef}
-          onMouseDown={startDragging}
-          className="w-2 bg-dark cursor-col-resize flex flex-col justify-center"
-          style={{ cursor: "col-resize", lineHeight: "12px" }}
-        >
-          ::
-          <br />
-          ::
-          <br />
-          ::
-          <br />
-        </div>
-
-        {/* Right Panel - IDE */}
-        <div ref={rightPanelRef} className="p-4 my-6" style={{ width: "50%" }}>
-          <div className="mb-4">
-            <label
-              htmlFor="language"
-              className="block mb-2 text-sm font-medium"
+      <main className="flex-1 bg-background py-8 px-2 md:px-8">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => window.history.back()}
             >
-              Select Language:
-            </label>
-            <select
-              id="language"
-              value={language}
-              onChange={handleLanguageChange}
-              className="p-2 rounded bg-gray-800 text-white border border-gray-600"
-            >
-              <option value="cpp">C++</option>
-              <option value="python">Python</option>
-              <option value="java">Java</option>
-            </select>
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold tracking-tight">Problem</h1>
           </div>
-
-          <CodeMirror
-            value={codeState[language]}
-            height="450px"
-            extensions={getLanguageConfig()}
-            onChange={handleCodeChange}
-            theme={vscodeDark}
-            className="rounded shadow-sm"
-            basicSetup={{
-              indentOnInput: true,
-              bracketMatching: true,
-              autocompletion: true,
-              closeBrackets: true,
-              indentationMarkers: true,
-            }}
-          />
-
-          <div className="mb-6 flex flex-row justify-between width-full">
-            <button
-              onClick={handleSubmit}
-              className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
-              disabled={isSubmitting}
+          <div className="flex flex-col md:flex-row gap-6 w-full min-h-[600px]">
+            {/* Left Panel: Problem Description */}
+            <Card
+              ref={leftPanelRef}
+              className="flex-1 min-w-[320px] bg-card border border-border rounded-lg shadow-sm flex flex-col"
+              style={{ width: "50%", minHeight: 500, transition: "width 0.2s" }}
             >
-              Submit
-            </button>
-            {(isSubmitting || submissionStatus !== null) && (
-              <div
-                className={`mt-4 px-4 py-2 rounded ${
-                  isSubmitting
-                    ? "bg-gray-700 text-white"
-                    : submissionStatus
-                    ? "bg-green-600 text-white"
-                    : "bg-red-600 text-white"
-                }`}
-              >
-                {isSubmitting
-                  ? "Submission queued..."
-                  : submissionStatus
-                  ? "Accepted"
-                  : "Wrong Answer"}
-              </div>
-            )}
-          </div>
-          {submissionStatus !== null && (
-            <div className="testCaseResults flex flex-col gap-2 width-full">
-              {testResults.map((test) => (
-                <div
-                  key={test.number}
-                  className="flex flex-row justify-between items-center p-3 rounded bg-gray-800"
-                >
-                  <div className="w-1/4">Test Case {test.number}</div>
-                  <div
-                    className={`w-1/2 ${
-                      test.verdict === "Accepted"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {test.verdict}
-                  </div>
-                  <div className="w-1/4 text-right">{test.executionTime}ms</div>
+              <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b">
+                <div>
+                  <CardTitle className="text-xl md:text-2xl font-bold">
+                    {problemId}
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    Solve the problem below
+                  </CardDescription>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <Badge className={getDifficultyColor("easy")}>Easy</Badge>
+                  {/* Replace with actual difficulty if available */}
+                  <Badge variant="outline">#DynamicProgramming</Badge>
+                  {/* Replace with actual tags if available */}
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-6">
+                <Tabs defaultValue="description" className="w-full">
+                  <TabsList className="mb-4">
+                    <TabsTrigger value="description">Description</TabsTrigger>
+                    <TabsTrigger value="solution">Solution</TabsTrigger>
+                    <TabsTrigger value="discussion">Discussion</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="description">
+                    <div className="prose max-w-none dark:prose-invert">
+                      <ReactMarkdown>{content}</ReactMarkdown>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="solution">
+                    <div className="text-muted-foreground">
+                      Solution coming soon.
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="discussion">
+                    <div className="text-muted-foreground">
+                      Discussion coming soon.
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+            {/* Draggable Divider */}
+            <div
+              ref={dividerRef}
+              onMouseDown={startDragging}
+              className="w-2 cursor-col-resize flex flex-col justify-center select-none"
+              style={{
+                cursor: "col-resize",
+                userSelect: "none",
+                background:
+                  "linear-gradient(to bottom, #e5e7eb 40%, #d1d5db 60%)",
+                borderRadius: "4px",
+                minHeight: 500,
+              }}
+            >
+              <div className="mx-auto w-1 h-16 bg-gray-300 rounded" />
             </div>
-          )}
+            {/* Right Panel: Code Editor */}
+            <Card
+              ref={rightPanelRef}
+              className="flex-1 min-w-[320px] bg-card border border-border rounded-lg shadow-sm flex flex-col"
+              style={{ width: "50%", minHeight: 500, transition: "width 0.2s" }}
+            >
+              <CardHeader className="border-b">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  <Code className="h-5 w-5" /> Code Editor
+                </CardTitle>
+                <CardDescription>
+                  Write and test your solution below.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col gap-4 p-6">
+                <div className="mb-2 flex items-center gap-2">
+                  <Select value={language} onValueChange={handleLanguageChange}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cpp">C++</SelectItem>
+                      <SelectItem value="python">Python</SelectItem>
+                      <SelectItem value="java">Java</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <CodeMirror
+                    value={codeState[language]}
+                    height="300px"
+                    theme={vscodeDark}
+                    extensions={getLanguageConfig()}
+                    onChange={handleCodeChange}
+                    className="rounded-md border border-border bg-background text-foreground"
+                  />
+                </div>
+                <div className="flex flex-col gap-2 min-w-[200px]">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="w-full"
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
+                  {submissionStatus && (
+                    <div className="mt-2">
+                      <Badge
+                        className={
+                          submissionStatus === "success"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }
+                      >
+                        {submissionStatus === "success"
+                          ? "Accepted"
+                          : "Wrong Answer"}
+                      </Badge>
+                    </div>
+                  )}
+                  {testResults.length > 0 && (
+                    <div className="mt-2">
+                      <div className="font-semibold mb-1">Test Results:</div>
+                      <ul className="space-y-1">
+                        {testResults.map((result, idx) => (
+                          <li key={idx} className="flex items-center gap-2">
+                            {result.passed ? (
+                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-red-500" />
+                            )}
+                            <span>
+                              {result.name}:{" "}
+                              {result.passed ? "Passed" : "Failed"}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
