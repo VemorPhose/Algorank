@@ -268,10 +268,10 @@ function Contests() {
 
   if (error) {
     return (
-      <div className="flex flex-col min-h-screen my-0">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
-        <main className="flex-1 p-8" style={{ backgroundColor: "#1D2125" }}>
-          <div className="text-center py-10 text-red-500">{error}</div>
+        <main className="flex-1 p-8">
+          <div className="text-center py-10 text-destructive">{error}</div>
         </main>
         <Footer />
       </div>
@@ -279,20 +279,22 @@ function Contests() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-1 bg-background py-8 px-2 md:px-8">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Contests</h1>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                Contests
+              </h1>
               <p className="text-muted-foreground">
                 Participate in coding contests and improve your skills
               </p>
             </div>
             <div className="flex items-center gap-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Search contests..."
@@ -317,14 +319,14 @@ function Contests() {
             <TabsContent value="all" className="space-y-4">
               {Object.entries(contests).map(([category, categoryContests]) => (
                 <div key={category} className="space-y-4">
-                  <h2 className="text-xl font-semibold capitalize">
+                  <h2 className="text-xl font-semibold capitalize text-foreground">
                     {category} Contests
                   </h2>
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {categoryContests.map((contest) => (
                       <Card
                         key={contest.contest_id}
-                        className="bg-card border-border"
+                        className="bg-card border border-border text-card-foreground"
                       >
                         <CardHeader>
                           <div className="flex items-center justify-between">
@@ -341,10 +343,10 @@ function Contests() {
                               {contest.difficulty}
                             </Badge>
                           </div>
-                          <CardTitle className="mt-2">
+                          <CardTitle className="mt-2 text-card-foreground">
                             {contest.title}
                           </CardTitle>
-                          <CardDescription>
+                          <CardDescription className="text-muted-foreground">
                             {contest.description}
                           </CardDescription>
                         </CardHeader>
@@ -379,7 +381,7 @@ function Contests() {
                                   handleRegistration(contest.contest_id)
                                 }
                                 disabled={registering}
-                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                className="bg-primary hover:bg-primary/80 text-primary-foreground"
                               >
                                 Register
                               </Button>
@@ -397,7 +399,7 @@ function Contests() {
                   {contests[tab === "past" ? "past" : tab].map((contest) => (
                     <Card
                       key={contest.contest_id}
-                      className="bg-card border-border"
+                      className="bg-card border border-border text-card-foreground"
                     >
                       <CardHeader>
                         <div className="flex items-center justify-between">
@@ -414,8 +416,12 @@ function Contests() {
                             {contest.difficulty}
                           </Badge>
                         </div>
-                        <CardTitle className="mt-2">{contest.title}</CardTitle>
-                        <CardDescription>{contest.description}</CardDescription>
+                        <CardTitle className="mt-2 text-card-foreground">
+                          {contest.title}
+                        </CardTitle>
+                        <CardDescription className="text-muted-foreground">
+                          {contest.description}
+                        </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2 text-sm text-muted-foreground">
@@ -448,7 +454,7 @@ function Contests() {
                                 handleRegistration(contest.contest_id)
                               }
                               disabled={registering}
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              className="bg-primary hover:bg-primary/80 text-primary-foreground"
                             >
                               Register
                             </Button>

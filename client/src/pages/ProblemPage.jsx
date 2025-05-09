@@ -32,7 +32,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "../components/ui/select";
 import { Skeleton } from "../components/ui/skeleton";
 import { ChevronLeft, Code, CheckCircle2, XCircle } from "lucide-react";
@@ -188,7 +187,7 @@ function ProblemPage() {
 
   if (!boilerplatesLoaded) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
         <main className="flex-1 flex items-center justify-center bg-background">
           <Skeleton className="w-full max-w-4xl h-96" />
@@ -199,7 +198,7 @@ function ProblemPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-1 bg-background py-8 px-2 md:px-8">
         <div className="max-w-5xl mx-auto space-y-6">
@@ -211,15 +210,17 @@ function ProblemPage() {
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold tracking-tight">Problem</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Problem
+            </h1>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* Problem Description Card */}
             <div className="lg:col-span-1">
-              <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
-                <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b">
+              <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col text-card-foreground">
+                <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-border">
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-bold">
+                    <CardTitle className="text-xl md:text-2xl font-bold text-card-foreground">
                       {problemId}
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">
@@ -235,13 +236,13 @@ function ProblemPage() {
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto p-6">
                   <Tabs defaultValue="description" className="w-full">
-                    <TabsList className="mb-4">
+                    <TabsList className="mb-4 bg-card">
                       <TabsTrigger value="description">Description</TabsTrigger>
                       <TabsTrigger value="solution">Solution</TabsTrigger>
                       <TabsTrigger value="discussion">Discussion</TabsTrigger>
                     </TabsList>
                     <TabsContent value="description">
-                      <div className="prose max-w-none dark:prose-invert">
+                      <div className="prose max-w-none dark:prose-invert text-foreground">
                         <ReactMarkdown>{content}</ReactMarkdown>
                       </div>
                     </TabsContent>
@@ -260,89 +261,82 @@ function ProblemPage() {
               </Card>
             </div>
             {/* Code Editor Card */}
-            <div className="lg:col-span-1">
-              <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col">
-                <CardHeader className="border-b">
-                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <Code className="h-5 w-5" /> Code Editor
-                  </CardTitle>
-                  <CardDescription>
-                    Write and test your solution below.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col gap-4 p-6">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Select
-                      value={language}
-                      onValueChange={handleLanguageChange}
-                    >
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cpp">C++</SelectItem>
-                        <SelectItem value="python">Python</SelectItem>
-                        <SelectItem value="java">Java</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex-1">
-                    <CodeMirror
-                      value={codeState[language]}
-                      height="300px"
-                      theme={vscodeDark}
-                      extensions={getLanguageConfig()}
-                      onChange={handleCodeChange}
-                      className="rounded-md border border-border bg-background text-foreground"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 min-w-[200px]">
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting}
-                      className="w-full"
-                    >
-                      {isSubmitting ? "Submitting..." : "Submit"}
-                    </Button>
-                    {submissionStatus && (
-                      <div className="mt-2">
-                        <Badge
-                          className={
-                            submissionStatus === "success"
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }
-                        >
-                          {submissionStatus === "success"
-                            ? "Accepted"
-                            : "Wrong Answer"}
-                        </Badge>
-                      </div>
-                    )}
-                    {testResults.length > 0 && (
-                      <div className="mt-2">
-                        <div className="font-semibold mb-1">Test Results:</div>
-                        <ul className="space-y-1">
-                          {testResults.map((result, idx) => (
-                            <li key={idx} className="flex items-center gap-2">
-                              {result.passed ? (
-                                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-red-500" />
-                              )}
-                              <span>
-                                {result.name}:{" "}
-                                {result.passed ? "Passed" : "Failed"}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="bg-card border border-border rounded-lg shadow-sm flex flex-col text-card-foreground">
+              <CardHeader className="border-b border-border">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2 text-card-foreground">
+                  <Code className="h-5 w-5" /> Code Editor
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Write and test your solution below.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col gap-4 p-6">
+                <div className="mb-2 flex items-center gap-2">
+                  <Select value={language} onValueChange={handleLanguageChange}>
+                    <SelectTrigger className="w-40" />
+                    <SelectContent>
+                      <SelectItem value="cpp">C++</SelectItem>
+                      <SelectItem value="python">Python</SelectItem>
+                      <SelectItem value="java">Java</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <CodeMirror
+                    value={codeState[language]}
+                    height="300px"
+                    theme={vscodeDark}
+                    extensions={getLanguageConfig()}
+                    onChange={handleCodeChange}
+                    className="rounded-md border border-border bg-background text-foreground"
+                  />
+                </div>
+                <div className="flex flex-col gap-2 min-w-[200px]">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
+                  {submissionStatus && (
+                    <div className="mt-2">
+                      <Badge
+                        className={
+                          submissionStatus === "success"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }
+                      >
+                        {submissionStatus === "success"
+                          ? "Accepted"
+                          : "Wrong Answer"}
+                      </Badge>
+                    </div>
+                  )}
+                  {testResults.length > 0 && (
+                    <div className="mt-2">
+                      <div className="font-semibold mb-1">Test Results:</div>
+                      <ul className="space-y-1">
+                        {testResults.map((result, idx) => (
+                          <li key={idx} className="flex items-center gap-2">
+                            {result.passed ? (
+                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-red-500" />
+                            )}
+                            <span>
+                              {result.name}:{" "}
+                              {result.passed ? "Passed" : "Failed"}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

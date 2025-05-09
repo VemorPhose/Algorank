@@ -287,207 +287,212 @@ function Problems() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
-      <main className="flex-1 space-y-6 px-4 md:px-6 lg:px-8 xl:px-12 min-w-full">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-3xl font-sans tracking-tight">Problems</h1>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Problems per page selector */}
-              <Select
-                value={problemsPerPage.toString()}
-                onValueChange={(v) => {
-                  setProblemsPerPage(Number(v));
-                  setCurrentPage(1);
-                }}
-              >
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue>{problemsPerPage} / page</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5 / page</SelectItem>
-                  <SelectItem value="10">10 / page</SelectItem>
-                  <SelectItem value="20">20 / page</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="relative flex-grow max-w-md">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search problems..."
-                  className="w-full rounded-md pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+      <main className="flex-1 py-8 px-2 md:px-8">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h1 className="text-3xl font-sans tracking-tight">Problems</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Problems per page selector */}
+                <Select
+                  value={problemsPerPage.toString()}
+                  onValueChange={(v) => {
+                    setProblemsPerPage(Number(v));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue>{problemsPerPage} / page</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5 / page</SelectItem>
+                    <SelectItem value="10">10 / page</SelectItem>
+                    <SelectItem value="20">20 / page</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="relative flex-grow max-w-md">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search problems..."
+                    className="w-full rounded-md pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-1"
-                  >
-                    <Filter className="h-4 w-4" />
-                    Filter
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
+                      <Filter className="h-4 w-4" />
+                      Filter
+                      {(selectedTags.length > 0 ||
+                        selectedStatuses.length > 0) && (
+                        <Badge
+                          variant="secondary"
+                          className="ml-1 rounded-full px-1 text-xs"
+                        >
+                          {selectedTags.length + selectedStatuses.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Filter Problems</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                      Status
+                    </DropdownMenuLabel>
+                    <DropdownMenuCheckboxItem
+                      checked={selectedStatuses.includes("solved")}
+                      onCheckedChange={() => toggleStatus("solved")}
+                    >
+                      Solved
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={selectedStatuses.includes("attempted")}
+                      onCheckedChange={() => toggleStatus("attempted")}
+                    >
+                      Attempted
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={selectedStatuses.includes("unsolved")}
+                      onCheckedChange={() => toggleStatus("unsolved")}
+                    >
+                      Unsolved
+                    </DropdownMenuCheckboxItem>
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                      Tags
+                    </DropdownMenuLabel>
+                    {allTags.map((tag) => (
+                      <DropdownMenuCheckboxItem
+                        key={tag}
+                        checked={selectedTags.includes(tag)}
+                        onCheckedChange={() => toggleTag(tag)}
+                      >
+                        {tag}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+
                     {(selectedTags.length > 0 ||
                       selectedStatuses.length > 0) && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-1 rounded-full px-1 text-xs"
-                      >
-                        {selectedTags.length + selectedStatuses.length}
-                      </Badge>
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={clearFilters}
+                          className="text-red-500"
+                        >
+                          Clear Filters
+                        </DropdownMenuItem>
+                      </>
                     )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Filter Problems</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                    Status
-                  </DropdownMenuLabel>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedStatuses.includes("solved")}
-                    onCheckedChange={() => toggleStatus("solved")}
-                  >
-                    Solved
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedStatuses.includes("attempted")}
-                    onCheckedChange={() => toggleStatus("attempted")}
-                  >
-                    Attempted
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedStatuses.includes("unsolved")}
-                    onCheckedChange={() => toggleStatus("unsolved")}
-                  >
-                    Unsolved
-                  </DropdownMenuCheckboxItem>
-
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                    Tags
-                  </DropdownMenuLabel>
-                  {allTags.map((tag) => (
-                    <DropdownMenuCheckboxItem
-                      key={tag}
-                      checked={selectedTags.includes(tag)}
-                      onCheckedChange={() => toggleTag(tag)}
-                    >
-                      {tag}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-
-                  {(selectedTags.length > 0 || selectedStatuses.length > 0) && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={clearFilters}
-                        className="text-red-500"
-                      >
-                        Clear Filters
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          </div>
 
-          {/* Difficulty Tabs */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="easy">Easy</TabsTrigger>
-              <TabsTrigger value="medium">Medium</TabsTrigger>
-              <TabsTrigger value="hard">Hard</TabsTrigger>
-            </TabsList>
-          </Tabs>
+            {/* Difficulty Tabs */}
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList>
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="easy">Easy</TabsTrigger>
+                <TabsTrigger value="medium">Medium</TabsTrigger>
+                <TabsTrigger value="hard">Hard</TabsTrigger>
+              </TabsList>
+            </Tabs>
 
-          {/* Problems Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {currentProblems.map((problem) => (
-              <Link key={problem.id} to={`/problem/${problem.id}`}>
-                <Card className="h-full hover:bg-muted/50 transition-colors">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="line-clamp-1">
-                        {problem.title}
-                      </CardTitle>
-                      <Badge className={getDifficultyColor(problem.difficulty)}>
-                        {problem.difficulty}
-                      </Badge>
-                    </div>
-                    <CardDescription className="line-clamp-2">
-                      {problem.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {problem.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
+            {/* Problems Grid */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {currentProblems.map((problem) => (
+                <Link key={problem.id} to={`/problem/${problem.id}`}>
+                  <Card className="h-full hover:bg-muted/50 transition-colors bg-card border border-border text-card-foreground">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="line-clamp-1 text-card-foreground">
+                          {problem.title}
+                        </CardTitle>
+                        <Badge
+                          className={getDifficultyColor(problem.difficulty)}
+                        >
+                          {problem.difficulty}
                         </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between text-sm text-muted-foreground">
-                    <div>Solved: {problem.solvedCount}</div>
-                    <div className={getStatusColor(problem.status)}>
-                      {problem.status === "solved"
-                        ? "✓ Solved"
-                        : problem.status === "attempted"
-                        ? "Attempted"
-                        : "Unsolved"}
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                      </div>
+                      <CardDescription className="line-clamp-2 text-muted-foreground">
+                        {problem.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        {problem.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between text-sm text-muted-foreground">
+                      <div>Solved: {problem.solvedCount}</div>
+                      <div className={getStatusColor(problem.status)}>
+                        {problem.status === "solved"
+                          ? "✓ Solved"
+                          : problem.status === "attempted"
+                          ? "Attempted"
+                          : "Unsolved"}
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </Link>
+              ))}
+            </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                  />
-                </PaginationItem>
-                {pageNumbers.map((number) => (
-                  <PaginationItem key={number}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(number)}
-                      isActive={currentPage === number}
-                    >
-                      {number}
-                    </PaginationLink>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
+                    />
                   </PaginationItem>
-                ))}
-                {currentPage < totalPages - 2 && <PaginationEllipsis />}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
+                  {pageNumbers.map((number) => (
+                    <PaginationItem key={number}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(number)}
+                        isActive={currentPage === number}
+                      >
+                        {number}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  {currentPage < totalPages - 2 && <PaginationEllipsis />}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </div>
         </div>
       </main>
       <Footer />

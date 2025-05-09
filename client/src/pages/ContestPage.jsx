@@ -160,7 +160,7 @@ function ContestPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
         <main className="flex-1 flex items-center justify-center bg-background">
           <div className="text-center py-10 text-muted-foreground">
@@ -174,10 +174,10 @@ function ContestPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
         <main className="flex-1 flex items-center justify-center bg-background">
-          <div className="text-center py-10 text-red-500">{error}</div>
+          <div className="text-center py-10 text-destructive">{error}</div>
         </main>
         <Footer />
       </div>
@@ -185,14 +185,14 @@ function ContestPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-1 bg-background py-8 px-2 md:px-8">
         {contest && canAccessContest() ? (
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold">{contest.title}</h1>
+                <h1 className="text-3xl font-bold text-foreground">{contest.title}</h1>
                 <p className="text-muted-foreground">{contest.description}</p>
               </div>
               <div className="flex items-center gap-4">
@@ -221,16 +221,18 @@ function ContestPage() {
               onValueChange={setActiveTab}
               className="w-full mt-6"
             >
-              <TabsList>
+              <TabsList className="bg-card">
                 <TabsTrigger value="problems">Problems</TabsTrigger>
                 <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
                 <TabsTrigger value="rules">Rules</TabsTrigger>
               </TabsList>
               <TabsContent value="problems">
-                <Card className="bg-card border-border">
+                <Card className="bg-card border border-border text-card-foreground">
                   <CardHeader>
                     <CardTitle>Problems</CardTitle>
-                    <CardDescription>Problems for this contest</CardDescription>
+                    <CardDescription className="text-muted-foreground">
+                      Solve these problems to earn points
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -277,10 +279,12 @@ function ContestPage() {
                 </Card>
               </TabsContent>
               <TabsContent value="leaderboard">
-                <Card className="bg-card border-border">
+                <Card className="bg-card border border-border text-card-foreground">
                   <CardHeader>
                     <CardTitle>Leaderboard</CardTitle>
-                    <CardDescription>Top participants</CardDescription>
+                    <CardDescription className="text-muted-foreground">
+                      See how you rank against other participants
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto">
@@ -310,10 +314,10 @@ function ContestPage() {
                 </Card>
               </TabsContent>
               <TabsContent value="rules">
-                <Card className="bg-card border-border">
+                <Card className="bg-card border border-border text-card-foreground">
                   <CardHeader>
                     <CardTitle>Contest Rules</CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-muted-foreground">
                       Read the rules before participating
                     </CardDescription>
                   </CardHeader>
@@ -342,10 +346,10 @@ function ContestPage() {
           </div>
         ) : (
           <div className="max-w-2xl mx-auto">
-            <Card className="bg-card border-border">
+            <Card className="bg-card border border-border text-card-foreground">
               <CardHeader>
                 <CardTitle>Contest Not Started</CardTitle>
-                <CardDescription>
+                <CardDescription className="text-muted-foreground">
                   The contest has not started yet. Please check back later.
                 </CardDescription>
               </CardHeader>
