@@ -8,7 +8,7 @@ const path = require("path");
 const { isFloat32Array } = require("util/types");
 const pool = require("../config/db");
 
-const JUDGE0_BASE_URL = "http://localhost:2358";
+const JUDGE0_BASE_URL = "https://ce.judge0.com";
 const SUBMISSION_CHECK_INTERVAL = 1000; // 1 second
 const MAX_CHECK_ATTEMPTS = 10;
 

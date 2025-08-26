@@ -303,12 +303,12 @@ function ProblemPage() {
                     <div className="mt-2">
                       <Badge
                         className={
-                          submissionStatus === "success"
+                          submissionStatus === true
                             ? "bg-green-500"
                             : "bg-red-500"
                         }
                       >
-                        {submissionStatus === "success"
+                        {submissionStatus === true
                           ? "Accepted"
                           : "Wrong Answer"}
                       </Badge>
