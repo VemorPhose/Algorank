@@ -1,15 +1,13 @@
-version: '2'
-
 x-logging:
   &default-logging
   logging:
     driver: json-file
     options:
-      max-size: 100m
+      max-size: 100M
 
 services:
   server:
-    image: judge0/judge0:1.13.0
+    image: judge0/judge0:1.13.1
     volumes:
       - ./judge0.conf:/judge0.conf:ro
     ports:
@@ -19,10 +17,11 @@ services:
     restart: always
 
   workers:
-    image: judge0/judge0:1.13.0
+    image: judge0/judge0:1.13.1
     command: ["./scripts/workers"]
     volumes:
       - ./judge0.conf:/judge0.conf:ro
+      # - /sys/fs/cgroup:/sys/fs/cgroup:rw # trying to mount cgroup
     privileged: true
     deploy:
       replicas: 2
@@ -30,25 +29,22 @@ services:
     restart: always
 
   db:
-    image: postgres:13.0
+    image: postgres:16.2
     env_file: judge0.conf
     volumes:
-      - postgres-data:/var/lib/postgresql/data/
+      - data:/var/lib/postgresql/data/
     <<: *default-logging
     restart: always
 
   redis:
-    image: redis:6.0
+    image: redis:7.2.4
     command: [
       "bash", "-c",
-      'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+      'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"'
     ]
     env_file: judge0.conf
-    volumes:
-      - redis-data:/data
     <<: *default-logging
     restart: always
 
 volumes:
-  postgres-data:
-  redis-data:
+  data:
