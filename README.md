@@ -1,128 +1,188 @@
-[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
+# Algorank v2
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+Algorank v2 is a full-stack competitive programming contest platform. The backend is FastAPI, PostgreSQL, Redis, Judge0, and Nginx. The frontend is a Vite React TypeScript app with TailwindCSS and a block-art visual system.
 
-# Algorank
-A platform for hosting competitive coding contests. Built to provide a seamless experience for both participants and organizers.
+## Implemented
 
-## Features
+- Application-owned auth with bcrypt passwords, JWT access tokens, refresh-token rotation, logout, and roles.
+- Contest lifecycle endpoints for creation, updates, publishing, closing, registration, participants, and user registrations.
+- Problem management with markdown statements, sample and hidden test cases, tags, limits, and contest attachment.
+- Async submissions through Redis queue workers, Judge0 execution, durable test results, idempotency keys, and polling-friendly status reads.
+- Redis-backed live leaderboard reads with PostgreSQL fallback.
+- Admin queue and worker status endpoints.
+- React frontend for public browsing, auth, contest rooms, problem solving, submissions, profile, and organizer/admin workflows.
+- Production-style Docker Compose stack with API, worker, PostgreSQL, Redis, Judge0, and nginx serving the built frontend.
 
-### Implemented
-- **User Authentication**: Secure login and registration using Firebase
-- **Problem Solving**: Interactive code editor with syntax highlighting and multiple language support
-- **Code Execution**: Secure sandboxed environment using Judge0 API for running and evaluating code
-- **Problem Set**: Browse available problems with difficulty ratings and categories
-- **User Statistics**: Track submission history and solved problems for each user
-- **Contest Dashboard**: View active, upcoming, and past contests
-- **Leaderboard**: Real-time rankings based on problem-solving performance
+## Repository Layout
 
-### To-Do List
-- **Extended User Profiles**: Detailed statistics and achievements
-- Rate limit users on submission endpoint
-- Elo/Rating system
-- Implement a monitoring system for all the working components
-- Containerize and deploy on a cloud hosting service
-- Add submissions tab to to view all past submissions, and if one is clicked show submitted code and test case statuses
-- Also add submissions tab in particular problem
-- Submissions in Python don't work for some reason, Java is untested
-
-## Tech Stack
-- **Front-End**: React.js with Vite, TailwindCSS
-- **Back-End**: Node.js, Express.js
-- **Authentication**: Firebase
-- **Database**: PostgreSQL
-- **Code Execution**: Judge0 API running in Docker
-
-## Folder Structure
-```
-algorank/
-├── client/                     # Frontend React application
-│   ├── src/
-│   │   ├── assets/            # Static assets and fonts
-│   │   ├── components/        # Reusable React components
-│   │   ├── pages/            # Page components
-│   │   └── problems/         # Problem-related components
-├── server/                    # Backend Node.js application
-│   ├── config/               # Configuration files
-│   ├── judge0-v1.13.0/       # Judge0 API configuration
-│   ├── models/               # Database models
-│   ├── routes/              # API routes
-│   └── testcases/           # Problem test cases
-└── tests/                    # Test suites for front and back end
+```text
+.
+├── app/                     # FastAPI application
+├── frontend/                # Vite + React + TypeScript frontend
+├── migrations/              # Alembic migrations
+├── nginx/                   # Nginx frontend/API routing
+├── scripts/                 # Cross-platform setup and startup helpers
+├── tests/                   # Backend pytest suite
+├── docker-compose.yml       # Full stack orchestration
+├── Dockerfile               # Backend API/worker image
+└── pyproject.toml           # Python project metadata
 ```
 
-## Getting Started
+## Quick Start
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/Algorank.git
-   cd Algorank
-   ```
+The helper scripts prepare a fresh checkout and start the full stack through the existing project toolchains.
 
-2. Install dependencies:
-   ```bash
-   # Install frontend dependencies
-   cd client
-   npm install
+macOS/Linux:
 
-   # Install backend dependencies
-   cd ../server
-   npm install
-   ```
+```bash
+./scripts/setup.sh
+./scripts/start-full-stack.sh
+```
 
-3. Set up environment files:
-   
-   Create `firebase.js` in `client/src/`:
-   ```javascript
-   import { initializeApp, getApps, getApp } from "firebase/app";
-   import { getAuth } from "firebase/auth";
+Windows PowerShell:
 
-   const firebaseConfig = {
-     apiKey: "your-api-key",
-     authDomain: "your-project.firebaseapp.com",
-     projectId: "your-project-id",
-     storageBucket: "your-project.storage.app",
-     messagingSenderId: "your-sender-id",
-     appId: "your-app-id",
-     measurementId: "your-measurement-id"
-   };
+```powershell
+.\scripts\setup.ps1
+.\scripts\start-full-stack.ps1
+```
 
-   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-   export const auth = getAuth(app);
-   ```
+The setup script copies `.env.example` to `.env` when needed, creates `.venv`, installs backend dev dependencies, installs frontend dependencies, runs the frontend typecheck/tests/build, and runs the backend pytest suite.
 
-   Create `.env` in `server/`:
-   ```
-   PORT=5000
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=your_database_name
-   DB_USER=your_database_user
-   DB_PASSWORD=your_database_password
-   ```
+Useful setup options:
 
-4. Start Judge0 API:
-   ```bash
-   cd server/judge0-v1.13.0
-   docker-compose up -d
-   ```
+```bash
+./scripts/setup.sh --skip-tests
+./scripts/setup.sh --skip-frontend-build
+./scripts/setup.sh --docker-build
+```
 
-5. Start development servers:
-   ```bash
-   # Start backend server
-   cd server
-   npm run dev
+PowerShell equivalents use switches such as `-SkipTests`, `-SkipFrontendBuild`, and `-DockerBuild`.
 
-   # In a new terminal, start frontend
-   cd client
-   npm run dev
-   ```
+The startup script runs `docker compose up --build`. Use `--detached`, `--no-build`, and `--pull` on macOS/Linux, or `-Detached`, `-NoBuild`, and `-Pull` in PowerShell.
 
-6. Visit `http://localhost:5173` to access the application
+## Local Development
+
+### Backend
+
+The setup scripts are the recommended first step. For manual backend work, create an environment file:
+
+```bash
+cp .env.example .env
+```
+
+Run the backend tests:
+
+```bash
+python -m pytest
+```
+
+When running without Docker, provide local PostgreSQL, Redis, and Judge0 values in `.env`, then start the API:
+
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend
+
+Install dependencies:
+
+```bash
+cd frontend
+npm install
+```
+
+Start Vite:
+
+```bash
+npm run dev
+```
+
+The frontend defaults to `VITE_API_BASE_URL=/api`. In local Vite development, `/api/*` is proxied to `http://localhost:8000/*`.
+
+Useful frontend commands:
+
+```bash
+npm run typecheck
+npm test
+npm run build
+```
+
+## Docker
+
+Docker is the intended production-like path, but it was not tested on this machine because Docker installation/use is prohibited in the local environment.
+
+Start the full stack on a Docker-capable host:
+
+```bash
+./scripts/start-full-stack.sh
+```
+
+On Windows PowerShell:
+
+```powershell
+.\scripts\start-full-stack.ps1
+```
+
+The raw equivalent is `docker compose up --build`.
+
+Run migrations inside the API container if needed:
+
+```bash
+docker compose exec api alembic upgrade head
+```
+
+Open the app:
+
+```text
+http://localhost
+```
+
+Important routes through nginx:
+
+```text
+/                 React frontend
+/api/*            Proxied to FastAPI, with /api stripped
+/docs             FastAPI Swagger UI
+/openapi.json     FastAPI OpenAPI schema
+/health           Health endpoint
+```
+
+## Default Bootstrap
+
+If `BOOTSTRAP_ADMIN_EMAIL` and `BOOTSTRAP_ADMIN_PASSWORD` are set, the API creates or updates that admin on startup. The first manually registered user also becomes an admin when the database is empty. Later privileged registrations require `X-Bootstrap-Token` to match `BOOTSTRAP_TOKEN`.
+
+## Frontend Routes
+
+```text
+/                         Dashboard
+/login, /register          Auth
+/contests                  Contest browser
+/contests/:id              Contest room
+/contests/:id/leaderboard  Standings
+/problems                  Problem set
+/problems/:slug            Statement and editor
+/submissions               Signed-in user submissions
+/submissions/:id           Submission results
+/profile                   Signed-in user profile
+/admin                     Organizer/admin console
+```
+
+## Worker
+
+The worker process is:
+
+```bash
+python -m app.workers.runner
+```
+
+It consumes Redis queue entries, calls local Judge0, writes results to PostgreSQL, refreshes Redis leaderboard state, and invalidates stale caches.
+
+## Verification Performed
+
+- Bash script syntax and help-output checks for `scripts/setup.sh` and `scripts/start-full-stack.sh`
+- Frontend `npm test`
+- Frontend `npm run typecheck`
+- Frontend `npm run build`
+- Backend `./.venv/bin/python -m pytest`
+
+PowerShell script execution is pending a machine with `pwsh` or Windows PowerShell available. Docker build/runtime verification is pending a Docker-capable machine.
