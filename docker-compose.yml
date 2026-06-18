@@ -1,0 +1,120 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: algorank
+      POSTGRES_USER: algorank
+      POSTGRES_PASSWORD: algorank
+    ports:
+      - "5432:5432"
+    volumes:
+      - algorank-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U algorank -d algorank"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - algorank-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://algorank:algorank@postgres:5432/algorank
+      REDIS_URL: redis://redis:6379/0
+      JUDGE0_BASE_URL: http://judge0-server:2358
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./tests:/app/tests:ro,Z
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      judge0-server:
+        condition: service_started
+
+  worker:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://algorank:algorank@postgres:5432/algorank
+      REDIS_URL: redis://redis:6379/0
+      JUDGE0_BASE_URL: http://judge0-server:2358
+      WORKER_ID: worker-1
+    command: ["python", "-m", "app.workers.runner"]
+    depends_on:
+      api:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  nginx:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_started
+
+  judge0-server:
+    image: judge0/judge0:1.13.1
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    ports:
+      - "2358:2358"
+    privileged: true
+    restart: unless-stopped
+    depends_on:
+      judge0-db:
+        condition: service_started
+      judge0-redis:
+        condition: service_started
+
+  judge0-workers:
+    image: judge0/judge0:1.13.1
+    command: ["./scripts/workers"]
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    privileged: true
+    restart: unless-stopped
+    depends_on:
+      judge0-server:
+        condition: service_started
+
+  judge0-db:
+    image: postgres:16-alpine
+    env_file: judge0.conf
+    volumes:
+      - judge0-postgres:/var/lib/postgresql/data
+
+  judge0-redis:
+    image: redis:7-alpine
+    command:
+      - sh
+      - -c
+      - redis-server --appendonly no --requirepass "$${REDIS_PASSWORD}"
+    env_file: judge0.conf
+
+volumes:
+  algorank-postgres:
+  algorank-redis:
+  judge0-postgres:
