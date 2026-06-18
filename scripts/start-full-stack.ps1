@@ -54,6 +54,24 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 
 Invoke-Checked "docker" @("compose", "version")
 
+# ---------------------------------------------------------------------------
+# Pre-flight: warn about host ports already in use
+# ---------------------------------------------------------------------------
+$portsToCheck = @(
+    @{Port=5433; Service="PostgreSQL (algorank)"},
+    @{Port=6379; Service="Redis (algorank)"},
+    @{Port=8000; Service="API"},
+    @{Port=80;   Service="Nginx frontend"},
+    @{Port=2358; Service="Judge0 server"}
+)
+
+foreach ($entry in $portsToCheck) {
+    $listening = netstat -ano 2>$null | Select-String ":$($entry.Port) .*LISTEN"
+    if ($listening) {
+        Write-Host "[start] WARNING: Host port $($entry.Port) ($($entry.Service)) is already in use. Docker may fail to bind it."
+    }
+}
+
 $composeArgs = @("compose", "up")
 if ($Pull) {
     $composeArgs += @("--pull", "always")

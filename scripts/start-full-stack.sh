@@ -61,6 +61,23 @@ fi
 command -v docker >/dev/null 2>&1 || die "Docker is required to start the full stack."
 docker compose version >/dev/null 2>&1 || die "Docker Compose v2 is required."
 
+# ---------------------------------------------------------------------------
+# Pre-flight: warn about host ports already in use
+# ---------------------------------------------------------------------------
+check_port() {
+  local port="$1"
+  local service="$2"
+  if ss -tlnH "sport = :$port" 2>/dev/null | grep -q ":$port"; then
+    info "WARNING: Host port $port ($service) is already in use. Docker may fail to bind it."
+  fi
+}
+
+check_port 5433 "PostgreSQL (algorank)"
+check_port 6379 "Redis (algorank)"
+check_port 8000 "API"
+check_port 80   "Nginx frontend"
+check_port 2358 "Judge0 server"
+
 compose_args=(compose up)
 if [[ "$PULL" -eq 1 ]]; then
   compose_args+=(--pull always)
