@@ -52,11 +52,11 @@ export function HomePage() {
   return (
     <div className="space-y-8">
       <section className="atlas-enter grid gap-8 lg:grid-cols-[1fr_18rem] lg:items-end">
-        <div>
-          <div className="mb-3 inline-flex rounded-lg border-2 border-ink bg-coral px-3 py-1 font-mono text-xs font-black uppercase text-lemon shadow-block-sm">
+        <div className="flex flex-col">
+          <div className="inline-flex w-fit rounded-lg border-2 border-ink bg-coral px-3 py-1 font-mono text-xs font-black uppercase text-lemon shadow-block-sm">
             Algorank Atlas
           </div>
-          <h1 className="inline-block max-w-5xl rounded-lg border-[3px] border-ink bg-panel px-3 pb-3 pt-2 text-5xl font-black leading-none text-ink shadow-block md:text-7xl">
+          <h1 className="block max-w-5xl rounded-lg border-[3px] border-ink bg-panel px-3 pb-3 pt-2 text-5xl font-black leading-none text-ink shadow-block md:text-7xl mt-3">
             Contest execution lab
           </h1>
           <p className="mt-5 max-w-3xl text-lg font-bold leading-8 text-ink">

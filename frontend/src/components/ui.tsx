@@ -79,13 +79,13 @@ export function PageTitle({
 }) {
   return (
     <div className="atlas-enter flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div className="max-w-3xl">
+      <div className="max-w-3xl flex flex-col">
         {eyebrow ? (
-          <div className="mb-3 inline-flex rounded-lg border-[3px] border-ink bg-coral px-3 py-1 font-mono text-xs font-black uppercase text-lemon shadow-block-sm">
+          <div className="inline-flex w-fit rounded-lg border-[3px] border-ink bg-coral px-3 py-1 font-mono text-xs font-black uppercase text-lemon shadow-block-sm">
             {eyebrow}
           </div>
         ) : null}
-        <h1 className="inline-block max-w-5xl rounded-lg border-[3px] border-ink bg-panel px-3 pb-2 pt-1 text-4xl font-black leading-none text-ink shadow-block md:text-6xl">
+        <h1 className="block max-w-5xl rounded-lg border-[3px] border-ink bg-panel px-3 pb-2 pt-1 text-4xl font-black leading-none text-ink shadow-block md:text-6xl mt-3">
           {title}
         </h1>
         {children ? <div className="mt-4 max-w-3xl text-base font-bold leading-7 text-ink">{children}</div> : null}
