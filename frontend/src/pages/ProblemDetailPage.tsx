@@ -118,7 +118,7 @@ export function ProblemDetailPage() {
   }
 
   if (error || !problem) {
-    return <Notice tone="bg-coral text-white">{error || "Problem not found."}</Notice>;
+    return <Notice tone="bg-coral text-lemon">{error || "Problem not found."}</Notice>;
   }
 
   return (
@@ -158,10 +158,10 @@ export function ProblemDetailPage() {
               <div className="grid gap-4">
                 {problem.sample_test_cases.map((testCase) => (
                   <div key={testCase.ordinal} className="grid gap-3 md:grid-cols-2">
-                    <pre className="overflow-x-auto border-2 border-ink bg-white p-3 text-sm font-bold shadow-block-sm">
+                    <pre className="overflow-x-auto rounded-lg border-[3px] border-ink bg-panel p-3 text-sm font-bold shadow-block-sm">
                       {testCase.stdin || "(empty)"}
                     </pre>
-                    <pre className="overflow-x-auto border-2 border-ink bg-white p-3 text-sm font-bold shadow-block-sm">
+                    <pre className="overflow-x-auto rounded-lg border-[3px] border-ink bg-panel p-3 text-sm font-bold shadow-block-sm">
                       {testCase.expected_output || "(empty)"}
                     </pre>
                   </div>
@@ -180,14 +180,14 @@ export function ProblemDetailPage() {
               <h2 className="text-2xl font-black">Editor</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              {contest ? <Badge tone="bg-aqua text-ink">{contest.status}</Badge> : null}
+              {contest ? <Badge tone="bg-aqua text-lemon">{contest.status}</Badge> : null}
               {submission ? <Badge tone={submissionTone(submission.status)}>{titleCase(submission.status)}</Badge> : null}
             </div>
           </div>
 
           {!contestId ? <Notice>Open this problem from a contest room to submit.</Notice> : null}
           {!isAuthenticated ? <Notice>Sign in before submitting a solution.</Notice> : null}
-          {submitError ? <Notice tone="bg-coral text-white">{submitError}</Notice> : null}
+          {submitError ? <Notice tone="bg-coral text-lemon">{submitError}</Notice> : null}
 
           <Field label="Language">
             <Select value={language} onChange={(event) => setLanguage(event.target.value)}>
@@ -227,38 +227,38 @@ export function ProblemDetailPage() {
           </div>
 
           {submission ? (
-            <div className="space-y-4 border-t-2 border-ink pt-5">
+            <div className="space-y-4 border-t-[3px] border-ink pt-5">
               <div className="grid gap-3 md:grid-cols-3">
-                <div className="border-2 border-ink bg-lemon p-3 shadow-block-sm">
+                <div className="border-[3px] border-ink bg-lemon p-3 shadow-block-sm">
                   <div className="text-xs font-black uppercase">Points</div>
                   <div className="text-2xl font-black">{submission.points_awarded}</div>
                 </div>
-                <div className="border-2 border-ink bg-aqua p-3 shadow-block-sm">
+                <div className="rounded-lg border-[3px] border-ink bg-aqua p-3 text-lemon shadow-block-sm">
                   <div className="text-xs font-black uppercase">Time</div>
                   <div className="text-2xl font-black">{submission.max_time_ms ?? 0} ms</div>
                 </div>
-                <div className="border-2 border-ink bg-panel p-3 shadow-block-sm">
+                <div className="rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
                   <div className="text-xs font-black uppercase">Updated</div>
                   <div className="text-sm font-black">{formatDateTime(submission.updated_at)}</div>
                 </div>
               </div>
-              {submission.error_message ? <Notice tone="bg-coral text-white">{submission.error_message}</Notice> : null}
+              {submission.error_message ? <Notice tone="bg-coral text-lemon">{submission.error_message}</Notice> : null}
               <div className="grid gap-2">
                 {submission.test_results.length ? (
                   submission.test_results.map((result) => (
                     <div
                       key={result.test_case_number}
-                      className={cn("border-2 border-ink bg-white p-3 shadow-block-sm", result.passed ? "border-ink" : "")}
+                      className={cn("rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm", result.passed ? "border-ink" : "")}
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2 font-black">
                           {result.passed ? <CheckCircle2 className="h-5 w-5 text-green-700" /> : <XCircle className="h-5 w-5 text-red-600" />}
                           Test {result.test_case_number}
                         </div>
-                        <Badge tone={result.passed ? "bg-grass text-ink" : "bg-coral text-white"}>{result.verdict}</Badge>
+                        <Badge tone={result.passed ? "bg-aqua text-lemon" : "bg-coral text-lemon"}>{result.verdict}</Badge>
                       </div>
                       {(result.stderr || result.compile_output || result.message) ? (
-                        <pre className="mt-3 overflow-x-auto border-2 border-ink bg-ink p-3 text-xs font-bold text-white">
+                        <pre className="mt-3 overflow-x-auto border-[3px] border-ink bg-ink p-3 text-xs font-bold text-lemon">
                           {result.stderr || result.compile_output || result.message}
                         </pre>
                       ) : null}

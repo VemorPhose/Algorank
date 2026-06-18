@@ -48,7 +48,7 @@ export function LoginPage() {
       <PageTitle eyebrow="Account" title="Sign In" />
       <Panel>
         <form className="grid gap-4" onSubmit={onSubmit}>
-          {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+          {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
           <Field label="Email">
             <Input type="email" value={email} autoComplete="email" onChange={(event) => setEmail(event.target.value)} required />
           </Field>
@@ -106,7 +106,7 @@ export function RegisterPage() {
       <PageTitle eyebrow="Account" title="Join Algorank" />
       <Panel>
         <form className="grid gap-4" onSubmit={onSubmit}>
-          {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+          {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
           <Field label="Email">
             <Input type="email" value={email} autoComplete="email" onChange={(event) => setEmail(event.target.value)} required />
           </Field>

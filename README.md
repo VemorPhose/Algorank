@@ -21,17 +21,50 @@ Algorank v2 is a full-stack competitive programming contest platform. The backen
 ├── frontend/                # Vite + React + TypeScript frontend
 ├── migrations/              # Alembic migrations
 ├── nginx/                   # Nginx frontend/API routing
+├── scripts/                 # Cross-platform setup and startup helpers
 ├── tests/                   # Backend pytest suite
 ├── docker-compose.yml       # Full stack orchestration
 ├── Dockerfile               # Backend API/worker image
 └── pyproject.toml           # Python project metadata
 ```
 
+## Quick Start
+
+The helper scripts prepare a fresh checkout and start the full stack through the existing project toolchains.
+
+macOS/Linux:
+
+```bash
+./scripts/setup.sh
+./scripts/start-full-stack.sh
+```
+
+Windows PowerShell:
+
+```powershell
+.\scripts\setup.ps1
+.\scripts\start-full-stack.ps1
+```
+
+The setup script copies `.env.example` to `.env` when needed, creates `.venv`, installs backend dev dependencies, installs frontend dependencies, runs the frontend typecheck/tests/build, and runs the backend pytest suite.
+
+Useful setup options:
+
+```bash
+./scripts/setup.sh --skip-tests
+./scripts/setup.sh --skip-frontend-build
+./scripts/setup.sh --docker-build
+```
+
+PowerShell equivalents use switches such as `-SkipTests`, `-SkipFrontendBuild`, and `-DockerBuild`.
+
+The startup script runs `docker compose up --build`. Use `--detached`, `--no-build`, and `--pull` on macOS/Linux, or `-Detached`, `-NoBuild`, and `-Pull` in PowerShell.
+
 ## Local Development
 
 ### Backend
 
-Create an environment file:
+The setup scripts are the recommended first step. For manual backend work, create an environment file:
 
 ```bash
 cp .env.example .env
@@ -81,8 +114,16 @@ Docker is the intended production-like path, but it was not tested on this machi
 Start the full stack on a Docker-capable host:
 
 ```bash
-docker compose up --build
+./scripts/start-full-stack.sh
 ```
+
+On Windows PowerShell:
+
+```powershell
+.\scripts\start-full-stack.ps1
+```
+
+The raw equivalent is `docker compose up --build`.
 
 Run migrations inside the API container if needed:
 
@@ -138,9 +179,10 @@ It consumes Redis queue entries, calls local Judge0, writes results to PostgreSQ
 
 ## Verification Performed
 
+- Bash script syntax and help-output checks for `scripts/setup.sh` and `scripts/start-full-stack.sh`
 - Frontend `npm test`
 - Frontend `npm run typecheck`
 - Frontend `npm run build`
 - Backend `./.venv/bin/python -m pytest`
 
-Docker build/runtime verification is pending a Docker-capable machine.
+PowerShell script execution is pending a machine with `pwsh` or Windows PowerShell available. Docker build/runtime verification is pending a Docker-capable machine.

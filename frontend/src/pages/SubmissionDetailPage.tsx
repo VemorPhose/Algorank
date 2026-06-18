@@ -52,7 +52,7 @@ export function SubmissionDetailPage() {
   }
 
   if (error || !submission) {
-    return <Notice tone="bg-coral text-white">{error || "Submission not found."}</Notice>;
+    return <Notice tone="bg-coral text-lemon">{error || "Submission not found."}</Notice>;
   }
 
   return (
@@ -75,13 +75,13 @@ export function SubmissionDetailPage() {
       </PageTitle>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Metric label="Points" value={submission.points_awarded} tone="bg-lemon" />
-        <Metric label="Language" value={submission.language} tone="bg-aqua" />
+        <Metric label="Points" value={submission.points_awarded} tone="bg-panel" />
+        <Metric label="Language" value={submission.language} tone="bg-aqua text-lemon" />
         <Metric label="Time" value={`${submission.max_time_ms ?? 0} ms`} tone="bg-panel" />
         <Metric label="Memory" value={`${submission.max_memory_kb ?? 0} KB`} tone="bg-panel" />
       </div>
 
-      {submission.error_message ? <Notice tone="bg-coral text-white">{submission.error_message}</Notice> : null}
+      {submission.error_message ? <Notice tone="bg-coral text-lemon">{submission.error_message}</Notice> : null}
 
       <Panel>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -94,14 +94,14 @@ export function SubmissionDetailPage() {
         {submission.test_results.length ? (
           <div className="grid gap-3">
             {submission.test_results.map((result) => (
-              <div key={result.test_case_number} className="border-2 border-ink bg-white p-4 shadow-block-sm">
+              <div key={result.test_case_number} className="rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-lg font-black">
                     {result.passed ? <CheckCircle2 className="h-5 w-5 text-green-700" /> : <XCircle className="h-5 w-5 text-red-600" />}
                     Test {result.test_case_number}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge tone={result.passed ? "bg-grass text-ink" : "bg-coral text-white"}>{result.verdict}</Badge>
+                    <Badge tone={result.passed ? "bg-aqua text-lemon" : "bg-coral text-lemon"}>{result.verdict}</Badge>
                     <Badge tone="bg-panel text-ink">{result.time_ms} ms</Badge>
                     <Badge tone="bg-panel text-ink">{result.memory_kb} KB</Badge>
                   </div>
@@ -115,7 +115,7 @@ export function SubmissionDetailPage() {
                       ["message", result.message],
                     ].map(([label, value]) =>
                       value ? (
-                        <pre key={label} className={cn("overflow-x-auto border-2 border-ink p-3 text-xs font-bold shadow-block-sm", label === "stdout" ? "bg-white text-ink" : "bg-ink text-white")}>
+                        <pre key={label} className={cn("overflow-x-auto border-[3px] border-ink p-3 text-xs font-bold shadow-block-sm", label === "stdout" ? "bg-panel text-ink" : "bg-ink text-lemon")}>
                           {label}
                           {"\n"}
                           {value}

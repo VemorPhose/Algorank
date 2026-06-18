@@ -5,19 +5,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#111827",
-        paper: "#f5f7fb",
-        panel: "#ffffff",
-        coral: "#ff5c39",
-        lemon: "#ffd84d",
-        aqua: "#2bd9c4",
-        violet: "#6d5dfc",
-        grass: "#4ade80",
+        ink: "#1b2021",
+        paper: "#8d99ae",
+        panel: "#fff1d0",
+        coral: "#bb4430",
+        lemon: "#fff1d0",
+        aqua: "#417b5a",
+        violet: "#5f6f8f",
+        grass: "#417b5a",
       },
       boxShadow: {
-        block: "8px 8px 0 #111827",
-        "block-sm": "4px 4px 0 #111827",
-        "block-lg": "12px 12px 0 #111827",
+        block: "8px 8px 0 #1b2021",
+        "block-sm": "4px 4px 0 #1b2021",
+        "block-lg": "12px 12px 0 #1b2021",
+        header: "0 6px 0 #1b2021",
       },
       fontFamily: {
         sans: [

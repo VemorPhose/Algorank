@@ -64,9 +64,9 @@ export function SubmissionsPage() {
       </PageTitle>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Metric label="Total" value={submissions.length} tone="bg-aqua" />
-        <Metric label="Accepted" value={submissions.filter((item) => item.status === "accepted").length} tone="bg-grass" />
-        <Metric label="Active" value={submissions.filter((item) => ["queued", "processing"].includes(item.status)).length} tone="bg-lemon" />
+        <Metric label="Total" value={submissions.length} tone="bg-aqua text-lemon" />
+        <Metric label="Accepted" value={submissions.filter((item) => item.status === "accepted").length} tone="bg-aqua text-lemon" />
+        <Metric label="Active" value={submissions.filter((item) => ["queued", "processing"].includes(item.status)).length} tone="bg-panel" />
       </div>
 
       <Panel>
@@ -89,7 +89,7 @@ export function SubmissionsPage() {
         </div>
       </Panel>
 
-      {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+      {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
       {loading ? <Spinner label="Loading submissions" /> : null}
 
       <div className="grid gap-3">
@@ -100,7 +100,7 @@ export function SubmissionsPage() {
               <Link
                 key={submission.id}
                 to={`/submissions/${submission.id}`}
-                className="grid gap-4 border-2 border-ink bg-white p-4 shadow-block-sm transition hover:-translate-y-0.5 hover:shadow-block md:grid-cols-[1fr_auto] md:items-center"
+                className="grid gap-4 rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm transition hover:-translate-y-0.5 hover:shadow-block md:grid-cols-[1fr_auto] md:items-center"
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-2">

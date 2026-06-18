@@ -22,7 +22,7 @@ export function RequirePrivileged() {
   }
 
   if (!isPrivileged) {
-    return <Notice tone="bg-coral text-white">Organizer or admin access is required.</Notice>;
+    return <Notice tone="bg-coral text-lemon">Organizer or admin access is required.</Notice>;
   }
 
   return <Outlet />;

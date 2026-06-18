@@ -82,9 +82,9 @@ export function AdminPage() {
       </PageTitle>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Metric label="Contests" value={contests.length} tone="bg-aqua" />
-        <Metric label="Problems" value={problems.length} tone="bg-lemon" />
-        <Metric label="Published" value={contests.filter((contest) => contest.status === "published").length} tone="bg-grass" />
+        <Metric label="Contests" value={contests.length} tone="bg-aqua text-lemon" />
+        <Metric label="Problems" value={problems.length} tone="bg-panel" />
+        <Metric label="Published" value={contests.filter((contest) => contest.status === "published").length} tone="bg-aqua text-lemon" />
         <Metric label="Role" value={user?.role || "-"} tone="bg-panel" />
       </div>
 
@@ -105,8 +105,8 @@ export function AdminPage() {
       </Panel>
 
       {loading ? <Spinner label="Loading admin" /> : null}
-      {message ? <Notice tone="bg-grass">{message}</Notice> : null}
-      {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+      {message ? <Notice tone="bg-aqua text-lemon">{message}</Notice> : null}
+      {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
 
       {tab === "contests" ? <ContestAdmin contests={contests} runAction={runAction} /> : null}
       {tab === "problems" ? <ProblemAdmin problems={problems} runAction={runAction} /> : null}
@@ -190,7 +190,7 @@ function ContestAdmin({
         <h2 className="mb-4 text-2xl font-black">Contest Operations</h2>
         <div className="grid gap-3">
           {contests.map((contest) => (
-            <div key={contest.id} className="border-2 border-ink bg-white p-4 shadow-block-sm">
+            <div key={contest.id} className="rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="text-lg font-black">{contest.title}</div>
@@ -320,7 +320,7 @@ function ProblemAdmin({
               </Button>
             </div>
             {testCases.map((testCase, index) => (
-              <div key={index} className="grid gap-3 border-2 border-ink bg-white p-3 shadow-block-sm">
+              <div key={index} className="grid gap-3 rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
                 <div className="flex items-center justify-between gap-3">
                   <Badge tone={testCase.is_sample ? "bg-lemon text-ink" : "bg-panel text-ink"}>Case {index + 1}</Badge>
                   <div className="flex items-center gap-3">
@@ -360,7 +360,7 @@ function ProblemAdmin({
         <h2 className="mb-4 text-2xl font-black">Problem Inventory</h2>
         <div className="grid gap-3">
           {problems.map((problem) => (
-            <div key={problem.id} className="border-2 border-ink bg-white p-3 shadow-block-sm">
+            <div key={problem.id} className="rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <div className="font-black">{problem.title}</div>
@@ -453,7 +453,7 @@ function SystemAdmin({
   isAdmin: boolean;
 }) {
   if (!isAdmin) {
-    return <Notice tone="bg-coral text-white">Admin role is required for system status.</Notice>;
+    return <Notice tone="bg-coral text-lemon">Admin role is required for system status.</Notice>;
   }
 
   return (
@@ -466,10 +466,10 @@ function SystemAdmin({
         {queueStatus ? (
           <div className="grid gap-4 md:grid-cols-2">
             {Object.entries(queueStatus.redis).map(([key, value]) => (
-              <Metric key={`redis-${key}`} label={`Redis ${key}`} value={value} tone="bg-aqua" />
+              <Metric key={`redis-${key}`} label={`Redis ${key}`} value={value} tone="bg-aqua text-lemon" />
             ))}
             {Object.entries(queueStatus.database).map(([key, value]) => (
-              <Metric key={`db-${key}`} label={`DB ${key}`} value={value} tone="bg-lemon" />
+              <Metric key={`db-${key}`} label={`DB ${key}`} value={value} tone="bg-panel" />
             ))}
           </div>
         ) : (
@@ -482,7 +482,7 @@ function SystemAdmin({
         {workerStatus?.workers.length ? (
           <div className="grid gap-3">
             {workerStatus.workers.map((worker, index) => (
-              <pre key={index} className="overflow-x-auto border-2 border-ink bg-ink p-3 text-xs font-bold text-white shadow-block-sm">
+              <pre key={index} className="overflow-x-auto border-[3px] border-ink bg-ink p-3 text-xs font-bold text-lemon shadow-block-sm">
                 {JSON.stringify(worker, null, 2)}
               </pre>
             ))}

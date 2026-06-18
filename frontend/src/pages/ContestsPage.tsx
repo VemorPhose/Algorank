@@ -77,9 +77,9 @@ export function ContestsPage() {
       </PageTitle>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Metric label="Live" value={counts.live} tone="bg-grass" />
-        <Metric label="Upcoming" value={counts.upcoming} tone="bg-aqua" />
-        <Metric label="Ended" value={counts.ended} tone="bg-lemon" />
+        <Metric label="Live" value={counts.live} tone="bg-aqua text-lemon" />
+        <Metric label="Upcoming" value={counts.upcoming} tone="bg-aqua text-lemon" />
+        <Metric label="Ended" value={counts.ended} tone="bg-panel" />
       </div>
 
       <Panel>
@@ -102,7 +102,7 @@ export function ContestsPage() {
         </div>
       </Panel>
 
-      {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+      {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
       {loading ? <Spinner label="Loading contests" /> : null}
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -126,8 +126,8 @@ function ContestCard({ contest, registered }: { contest: ContestRead; registered
     <Link
       to={`/contests/${contest.id}`}
       className={cn(
-        "group block border-2 border-ink bg-white p-5 shadow-block transition hover:-translate-y-0.5 hover:shadow-block-lg",
-        phase === "live" && "bg-aqua",
+        "group block rounded-lg border-[3px] border-ink bg-panel p-5 shadow-block transition hover:-translate-y-0.5 hover:shadow-block-lg",
+        phase === "live" && "bg-aqua text-lemon",
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -137,13 +137,13 @@ function ContestCard({ contest, registered }: { contest: ContestRead; registered
         </div>
         <div className="flex flex-wrap gap-2">
           <Badge tone={contestTone(phase)}>{titleCase(phase)}</Badge>
-          {registered ? <Badge tone="bg-violet text-white">Registered</Badge> : null}
+          {registered ? <Badge tone="bg-violet text-lemon">Registered</Badge> : null}
         </div>
       </div>
       <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
         <Metric label="Starts" value={phase === "upcoming" ? timeUntil(contest.start_time) : formatDateTime(contest.start_time)} tone="bg-panel" />
-        <Metric label="Problems" value={contest.problem_count} tone="bg-lemon" />
-        <Metric label="Players" value={contest.participant_count} tone="bg-aqua" />
+        <Metric label="Problems" value={contest.problem_count} tone="bg-panel" />
+        <Metric label="Players" value={contest.participant_count} tone="bg-aqua text-lemon" />
         <Metric label="Languages" value={contest.allowed_languages.length || "Any"} tone="bg-panel" />
       </div>
       <div className="mt-5 flex flex-wrap items-center gap-3 text-sm font-black text-ink/75">

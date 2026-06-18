@@ -52,7 +52,7 @@ export function LeaderboardPage() {
   }
 
   if (error || !leaderboard || !contest) {
-    return <Notice tone="bg-coral text-white">{error || "Leaderboard not found."}</Notice>;
+    return <Notice tone="bg-coral text-lemon">{error || "Leaderboard not found."}</Notice>;
   }
 
   return (
@@ -79,7 +79,7 @@ export function LeaderboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[680px] border-collapse text-left">
               <thead>
-                <tr className="border-b-2 border-ink bg-lemon">
+                <tr className="border-b-[3px] border-ink bg-lemon">
                   <th className="p-3 font-black">Rank</th>
                   <th className="p-3 font-black">User</th>
                   <th className="p-3 font-black">Score</th>
@@ -90,11 +90,11 @@ export function LeaderboardPage() {
               </thead>
               <tbody>
                 {leaderboard.entries.map((entry) => (
-                  <tr key={entry.user_id} className="border-b-2 border-ink bg-white">
+                  <tr key={entry.user_id} className="border-b-[3px] border-ink bg-panel">
                     <td className="p-3 text-xl font-black">#{entry.rank}</td>
                     <td className="p-3 font-black">{entry.username}</td>
                     <td className="p-3">
-                      <Badge tone="bg-grass text-ink">
+                      <Badge tone="bg-aqua text-lemon">
                         <Trophy className="h-3.5 w-3.5" />
                         {entry.total_score}
                       </Badge>

@@ -35,7 +35,7 @@ export function ProfilePage() {
   }, [refreshMe]);
 
   if (!user) {
-    return <Notice tone="bg-coral text-white">Not signed in.</Notice>;
+    return <Notice tone="bg-coral text-lemon">Not signed in.</Notice>;
   }
 
   return (
@@ -45,28 +45,28 @@ export function ProfilePage() {
       </PageTitle>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Metric label="Registered" value={contests.length} tone="bg-aqua" />
-        <Metric label="Submissions" value={submissions.length} tone="bg-lemon" />
-        <Metric label="Accepted" value={submissions.filter((item) => item.status === "accepted").length} tone="bg-grass" />
+        <Metric label="Registered" value={contests.length} tone="bg-aqua text-lemon" />
+        <Metric label="Submissions" value={submissions.length} tone="bg-panel" />
+        <Metric label="Accepted" value={submissions.filter((item) => item.status === "accepted").length} tone="bg-aqua text-lemon" />
         <Metric label="Joined" value={formatDateTime(user.created_at)} tone="bg-panel" />
       </div>
 
-      {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+      {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
       {loading ? <Spinner label="Loading profile" /> : null}
 
       <section className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
         <Panel>
           <h2 className="text-2xl font-black">Account</h2>
           <div className="mt-4 grid gap-3">
-            <div className="flex items-center gap-3 border-2 border-ink bg-white p-3 shadow-block-sm">
+            <div className="flex items-center gap-3 rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
               <Mail className="h-5 w-5" />
               <span className="font-bold">{user.email}</span>
             </div>
-            <div className="flex items-center gap-3 border-2 border-ink bg-white p-3 shadow-block-sm">
+            <div className="flex items-center gap-3 rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
               <Shield className="h-5 w-5" />
               <span className="font-bold">{user.role}</span>
             </div>
-            <div className="flex items-center gap-3 border-2 border-ink bg-white p-3 shadow-block-sm">
+            <div className="flex items-center gap-3 rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
               <CalendarDays className="h-5 w-5" />
               <span className="font-bold">{formatDateTime(user.created_at)}</span>
             </div>
@@ -83,7 +83,7 @@ export function ProfilePage() {
           <div className="grid gap-3">
             {contests.length ? (
               contests.map((contest) => (
-                <Link key={contest.id} to={`/contests/${contest.id}`} className="border-2 border-ink bg-white p-4 shadow-block-sm transition hover:-translate-y-0.5">
+                <Link key={contest.id} to={`/contests/${contest.id}`} className="rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm transition hover:-translate-y-0.5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="font-black">{contest.title}</div>
@@ -110,7 +110,7 @@ export function ProfilePage() {
         <div className="grid gap-3">
           {submissions.slice(0, 6).length ? (
             submissions.slice(0, 6).map((submission) => (
-              <Link key={submission.id} to={`/submissions/${submission.id}`} className="grid gap-2 border-2 border-ink bg-white p-3 shadow-block-sm md:grid-cols-[1fr_auto] md:items-center">
+              <Link key={submission.id} to={`/submissions/${submission.id}`} className="grid gap-2 rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm md:grid-cols-[1fr_auto] md:items-center">
                 <div className="font-bold">{submission.id}</div>
                 <div className="flex flex-wrap gap-2">
                   <Badge tone={submissionTone(submission.status)}>{titleCase(submission.status)}</Badge>

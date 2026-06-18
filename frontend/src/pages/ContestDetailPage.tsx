@@ -88,7 +88,7 @@ export function ContestDetailPage() {
   }
 
   if (error || !contest) {
-    return <Notice tone="bg-coral text-white">{error || "Contest not found."}</Notice>;
+    return <Notice tone="bg-coral text-lemon">{error || "Contest not found."}</Notice>;
   }
 
   return (
@@ -98,14 +98,14 @@ export function ContestDetailPage() {
         Back
       </Link>
 
-      <Panel accent={phase === "live" ? "bg-aqua" : "bg-panel"} className="space-y-6">
+      <Panel accent={phase === "live" ? "bg-aqua text-lemon" : "bg-panel"} className="space-y-6">
         <PageTitle
           eyebrow="Contest Room"
           title={contest.title}
           action={
             <>
               <Badge tone={contestTone(phase)}>{titleCase(phase)}</Badge>
-              {registered ? <Badge tone="bg-violet text-white"><CheckCircle2 className="h-3.5 w-3.5" />Registered</Badge> : null}
+              {registered ? <Badge tone="bg-violet text-lemon"><CheckCircle2 className="h-3.5 w-3.5" />Registered</Badge> : null}
             </>
           }
         >
@@ -113,9 +113,9 @@ export function ContestDetailPage() {
         </PageTitle>
 
         <div className="grid gap-3 md:grid-cols-4">
-          <Metric label="Start" value={formatDateTime(contest.start_time)} tone="bg-lemon" />
+          <Metric label="Start" value={formatDateTime(contest.start_time)} tone="bg-panel" />
           <Metric label="End" value={formatDateTime(contest.end_time)} tone="bg-panel" />
-          <Metric label="Problems" value={contest.problem_count} tone="bg-coral text-white" />
+          <Metric label="Problems" value={contest.problem_count} tone="bg-coral text-lemon" />
           <Metric label="Players" value={contest.participant_count} tone="bg-panel" />
         </div>
 
@@ -139,7 +139,7 @@ export function ContestDetailPage() {
             Refresh
           </button>
         </div>
-        {registerError ? <Notice tone="bg-coral text-white">{registerError}</Notice> : null}
+        {registerError ? <Notice tone="bg-coral text-lemon">{registerError}</Notice> : null}
       </Panel>
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
@@ -156,14 +156,14 @@ export function ContestDetailPage() {
                   <Link
                     key={problem.id}
                     to={`/problems/${problem.slug}?contestId=${contest.id}&problemId=${problem.problem_id}`}
-                    className="grid gap-3 border-2 border-ink bg-white p-4 shadow-block-sm transition hover:-translate-y-0.5 md:grid-cols-[auto_1fr_auto] md:items-center"
+                    className="grid gap-3 rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm transition hover:-translate-y-0.5 md:grid-cols-[auto_1fr_auto] md:items-center"
                   >
                     <Badge tone="bg-lemon text-ink">#{problem.order_index}</Badge>
                     <div>
                       <div className="text-lg font-black">{problem.title}</div>
                       <div className="text-sm font-bold text-ink/60">{problem.slug}</div>
                     </div>
-                    <Badge tone="bg-coral text-white">{problem.points} pts</Badge>
+                    <Badge tone="bg-coral text-lemon">{problem.points} pts</Badge>
                   </Link>
                 ))
             ) : (
@@ -181,13 +181,13 @@ export function ContestDetailPage() {
             {leaderboard?.entries.length ? (
               <div className="grid gap-2">
                 {leaderboard.entries.slice(0, 5).map((entry) => (
-                  <div key={entry.user_id} className="grid grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 border-ink bg-white p-3 shadow-block-sm">
+                  <div key={entry.user_id} className="grid grid-cols-[3rem_1fr_auto] items-center gap-3 rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
                     <div className="text-xl font-black">#{entry.rank}</div>
                     <div>
                       <div className="font-black">{entry.username}</div>
                       <div className="text-xs font-bold text-ink/60">{entry.solved_count} solved</div>
                     </div>
-                    <Badge tone="bg-grass text-ink">{entry.total_score}</Badge>
+                    <Badge tone="bg-aqua text-lemon">{entry.total_score}</Badge>
                   </div>
                 ))}
               </div>
@@ -204,7 +204,7 @@ export function ContestDetailPage() {
             {rules.length ? (
               <dl className="grid gap-3">
                 {rules.map(([key, value]) => (
-                  <div key={key} className="border-2 border-ink bg-white p-3 shadow-block-sm">
+                  <div key={key} className="rounded-lg border-[3px] border-ink bg-panel p-3 shadow-block-sm">
                     <dt className="font-black">{key}</dt>
                     <dd className="mt-1 text-sm font-semibold text-ink/70">{value}</dd>
                   </div>

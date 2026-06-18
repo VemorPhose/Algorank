@@ -4,6 +4,13 @@
 
 :root {
   color-scheme: light;
+  --atlas-tomato-jam: #bb4430;
+  --atlas-carbon-black: #1b2021;
+  --atlas-lavender-grey: #8d99ae;
+  --atlas-papaya-whip: #fff1d0;
+  --atlas-jungle-teal: #417b5a;
+  --atlas-shadow: 8px 8px 0 var(--atlas-carbon-black);
+  --atlas-shadow-soft: 4px 4px 0 var(--atlas-carbon-black);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -22,7 +29,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #f5f7fb;
+  background: var(--atlas-lavender-grey);
+  color: var(--atlas-carbon-black);
+  letter-spacing: 0;
 }
 
 button,
@@ -39,18 +48,56 @@ a {
 
 .art-grid {
   background-image:
-    linear-gradient(rgba(17, 24, 39, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 24, 39, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(27, 32, 33, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 32, 33, 0.12) 1px, transparent 1px);
   background-size: 36px 36px;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent 70%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent 72%);
 }
 
 .art-shape {
   position: absolute;
-  border: 2px solid #111827;
-  box-shadow: 8px 8px 0 #111827;
+  border: 3px solid var(--atlas-carbon-black);
+  box-shadow: var(--atlas-shadow);
   transform: rotate(-5deg);
-  opacity: 0.28;
+  opacity: 0.32;
+  animation: atlas-float-shape 10s ease-in-out infinite;
+}
+
+.art-shape:nth-child(2) {
+  animation-duration: 12s;
+  animation-delay: 1s;
+}
+
+.art-shape:nth-child(3) {
+  animation-duration: 11s;
+  animation-delay: 0.4s;
+}
+
+@keyframes atlas-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes atlas-float-shape {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg);
+  }
+
+  50% {
+    transform: translateY(18px) rotate(5deg);
+  }
+}
+
+.atlas-enter {
+  animation: atlas-fade-up 520ms ease both;
 }
 
 .markdown-body {
@@ -73,19 +120,21 @@ a {
 }
 
 .markdown-body code {
-  border: 1px solid #111827;
-  background: #ffffff;
+  border: 2px solid var(--atlas-carbon-black);
+  border-radius: 8px;
+  background: var(--atlas-papaya-whip);
   padding: 0.1rem 0.25rem;
   font-weight: 800;
 }
 
 .markdown-body pre {
   overflow-x: auto;
-  border: 2px solid #111827;
-  background: #111827;
-  color: #ffffff;
+  border: 3px solid var(--atlas-carbon-black);
+  border-radius: 8px;
+  background: var(--atlas-carbon-black);
+  color: var(--atlas-papaya-whip);
   padding: 1rem;
-  box-shadow: 4px 4px 0 #111827;
+  box-shadow: var(--atlas-shadow-soft);
 }
 
 .markdown-body pre code {
@@ -102,11 +151,17 @@ a {
 
 .markdown-body th,
 .markdown-body td {
-  border: 2px solid #111827;
+  border: 3px solid var(--atlas-carbon-black);
   padding: 0.5rem;
 }
 
 .cm-editor {
-  border: 2px solid #111827;
-  box-shadow: 4px 4px 0 #111827;
+  border: 3px solid var(--atlas-carbon-black);
+  border-radius: 8px;
+  box-shadow: var(--atlas-shadow-soft);
+}
+
+::selection {
+  background: var(--atlas-tomato-jam);
+  color: var(--atlas-papaya-whip);
 }

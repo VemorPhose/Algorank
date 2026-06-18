@@ -73,8 +73,8 @@ export function ProblemsPage() {
       </PageTitle>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Metric label="Total" value={problems.length} tone="bg-aqua" />
-        <Metric label="Tags" value={tags.length} tone="bg-lemon" />
+        <Metric label="Total" value={problems.length} tone="bg-aqua text-lemon" />
+        <Metric label="Tags" value={tags.length} tone="bg-panel" />
         <Metric label="Hidden visible" value={problems.filter((problem) => problem.hidden).length} tone="bg-panel" />
       </div>
 
@@ -106,7 +106,7 @@ export function ProblemsPage() {
         </div>
       </Panel>
 
-      {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+      {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
       {loading ? <Spinner label="Loading problems" /> : null}
 
       <div className="grid gap-4">
@@ -115,13 +115,13 @@ export function ProblemsPage() {
             <Link
               key={problem.id}
               to={`/problems/${problem.slug}`}
-              className="grid gap-4 border-2 border-ink bg-white p-5 shadow-block transition hover:-translate-y-0.5 hover:shadow-block-lg lg:grid-cols-[1fr_auto] lg:items-center"
+              className="grid gap-4 rounded-lg border-[3px] border-ink bg-panel p-5 shadow-block transition hover:-translate-y-0.5 hover:shadow-block-lg lg:grid-cols-[1fr_auto] lg:items-center"
             >
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-2xl font-black text-ink">{problem.title}</h2>
                   {problem.hidden ? (
-                    <Badge tone="bg-ink text-white">
+                    <Badge tone="bg-ink text-lemon">
                       <EyeOff className="h-3.5 w-3.5" />
                       Hidden
                     </Badge>
@@ -131,15 +131,15 @@ export function ProblemsPage() {
                   <Badge tone={difficultyTone(problem.difficulty)}>{problem.difficulty || "General"}</Badge>
                   <Badge tone="bg-panel text-ink">{problem.slug}</Badge>
                   {problem.tags.map((tag) => (
-                    <Badge key={tag} tone="bg-white text-ink">
+                    <Badge key={tag} tone="bg-panel text-ink">
                       {tag}
                     </Badge>
                   ))}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-80">
-                <Metric label="Solved" value={problem.solved_count} tone="bg-aqua" />
-                <Metric label="Added" value={formatShortDate(problem.created_at)} tone="bg-lemon" />
+                <Metric label="Solved" value={problem.solved_count} tone="bg-aqua text-lemon" />
+                <Metric label="Added" value={formatShortDate(problem.created_at)} tone="bg-panel" />
                 <Metric label="Open" value={<Code2 className="h-6 w-6" />} tone="bg-panel" />
               </div>
             </Link>

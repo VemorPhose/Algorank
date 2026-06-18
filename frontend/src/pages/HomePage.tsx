@@ -51,53 +51,51 @@ export function HomePage() {
 
   return (
     <div className="space-y-8">
-      <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
-        <Panel accent="bg-lemon" className="relative overflow-hidden p-6 md:p-8">
-          <div className="absolute -right-8 top-8 h-28 w-28 rotate-12 border-2 border-ink bg-aqua shadow-block" />
-          <div className="absolute bottom-8 right-24 h-14 w-32 -rotate-6 border-2 border-ink bg-coral shadow-block-sm" />
-          <div className="relative max-w-3xl">
-            <div className="mb-4 inline-flex border-2 border-ink bg-white px-3 py-1 font-mono text-xs font-black uppercase shadow-block-sm">
-              Contest engine online
-            </div>
-            <h1 className="text-5xl font-black leading-none text-ink md:text-7xl">Solve fast. Rank live.</h1>
-            <p className="mt-5 max-w-2xl text-lg font-bold text-ink/75">
-              Algorank runs timed programming contests with queued Judge0 submissions, Redis-backed standings, and role-based organizer controls.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/contests" className={buttonClass("primary")}>
-                <Trophy className="h-5 w-5" />
-                Contests
-              </Link>
-              <Link to="/problems" className={buttonClass("plain")}>
-                <Code2 className="h-5 w-5" />
-                Problems
-              </Link>
-              {!isAuthenticated ? (
-                <Link to="/register" className={buttonClass("secondary")}>
-                  Join
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-              ) : null}
-            </div>
+      <section className="atlas-enter grid gap-8 lg:grid-cols-[1fr_18rem] lg:items-end">
+        <div>
+          <div className="mb-3 inline-flex rounded-lg border-2 border-ink bg-coral px-3 py-1 font-mono text-xs font-black uppercase text-lemon shadow-block-sm">
+            Algorank Atlas
           </div>
-        </Panel>
+          <h1 className="inline-block max-w-5xl rounded-lg border-[3px] border-ink bg-panel px-3 pb-3 pt-2 text-5xl font-black leading-none text-ink shadow-block md:text-7xl">
+            Contest execution lab
+          </h1>
+          <p className="mt-5 max-w-3xl text-lg font-bold leading-8 text-ink">
+            Track contests, queue-backed Judge0 submissions, Redis standings, and role-gated operations from one production-ready workbench.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/contests" className={buttonClass("primary")}>
+              <Trophy className="h-5 w-5" />
+              Contests
+            </Link>
+            <Link to="/problems" className={buttonClass("plain")}>
+              <Code2 className="h-5 w-5" />
+              Problems
+            </Link>
+            {!isAuthenticated ? (
+              <Link to="/register" className={buttonClass("secondary")}>
+                Join
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            ) : null}
+          </div>
+        </div>
 
-        <Panel className="grid content-between gap-5" accent="bg-panel">
+        <Panel className="grid content-between gap-5" accent="bg-aqua text-lemon">
           <div>
-            <div className="font-mono text-xs font-black uppercase text-coral">Session</div>
-            <div className="mt-2 text-3xl font-black text-ink">{user ? user.username : "Guest"}</div>
-            <p className="mt-2 text-sm font-bold text-ink/65">
+            <div className="font-mono text-xs font-black uppercase text-lemon/80">Session</div>
+            <div className="mt-2 text-3xl font-black text-lemon">{user ? user.username : "Guest"}</div>
+            <p className="mt-2 text-sm font-bold text-lemon/80">
               {user ? `${titleCase(user.role)} account` : "Public browsing is open. Submissions require sign in."}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Metric label="Published" value={publishedCount} tone="bg-aqua" />
-            <Metric label="Problems" value={problems.length} tone="bg-coral text-white" />
+            <Metric label="Published" value={publishedCount} tone="bg-aqua text-lemon" />
+            <Metric label="Problems" value={problems.length} tone="bg-coral text-lemon" />
           </div>
         </Panel>
       </section>
 
-      {error ? <Notice tone="bg-coral text-white">{error}</Notice> : null}
+      {error ? <Notice tone="bg-coral text-lemon">{error}</Notice> : null}
       {loading ? <Spinner label="Loading dashboard" /> : null}
 
       <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -105,7 +103,7 @@ export function HomePage() {
           <PageTitle eyebrow="Now" title="Contest Pulse" />
           <div className="mt-5 space-y-4">
             {liveContest ? (
-              <Link to={`/contests/${liveContest.id}`} className="block border-2 border-ink bg-white p-4 shadow-block-sm transition hover:-translate-y-0.5 hover:shadow-block">
+              <Link to={`/contests/${liveContest.id}`} className="block rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm transition hover:-translate-y-0.5 hover:shadow-block">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="text-2xl font-black text-ink">{liveContest.title}</div>
@@ -116,8 +114,8 @@ export function HomePage() {
                   <Badge tone={contestTone(contestPhase(liveContest))}>{contestPhase(liveContest)}</Badge>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
-                  <Metric label="Problems" value={liveContest.problem_count} tone="bg-lemon" />
-                  <Metric label="Players" value={liveContest.participant_count} tone="bg-aqua" />
+                  <Metric label="Problems" value={liveContest.problem_count} tone="bg-panel" />
+                  <Metric label="Players" value={liveContest.participant_count} tone="bg-aqua text-lemon" />
                   <Metric label="Left" value={timeUntil(liveContest.end_time)} tone="bg-panel" />
                 </div>
               </Link>
@@ -126,11 +124,11 @@ export function HomePage() {
             )}
 
             {nextContest ? (
-              <div className="border-2 border-ink bg-aqua p-4 shadow-block-sm">
+              <div className="rounded-lg border-[3px] border-ink bg-aqua p-4 text-lemon shadow-block-sm">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="font-black text-ink">{nextContest.title}</div>
-                    <div className="text-sm font-bold text-ink/65">Starts in {timeUntil(nextContest.start_time)}</div>
+                    <div className="font-black text-lemon">{nextContest.title}</div>
+                    <div className="text-sm font-bold text-lemon/75">Starts in {timeUntil(nextContest.start_time)}</div>
                   </div>
                   <Link to={`/contests/${nextContest.id}`} className={buttonClass("plain")}>
                     Open
@@ -149,14 +147,14 @@ export function HomePage() {
                 <Link
                   key={problem.id}
                   to={`/problems/${problem.slug}`}
-                  className="grid gap-3 border-2 border-ink bg-white p-4 shadow-block-sm transition hover:-translate-y-0.5 md:grid-cols-[1fr_auto] md:items-center"
+                  className="grid gap-3 rounded-lg border-[3px] border-ink bg-panel p-4 shadow-block-sm transition hover:-translate-y-0.5 md:grid-cols-[1fr_auto] md:items-center"
                 >
                   <div>
                     <div className="text-lg font-black text-ink">{problem.title}</div>
                     <div className="mt-1 flex flex-wrap gap-2">
                       <Badge tone={difficultyTone(problem.difficulty)}>{problem.difficulty || "General"}</Badge>
                       {problem.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} tone="bg-white text-ink">
+                        <Badge key={tag} tone="bg-panel text-ink">
                           {tag}
                         </Badge>
                       ))}
@@ -176,17 +174,17 @@ export function HomePage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <Panel accent="bg-coral text-white">
+        <Panel accent="bg-coral text-lemon">
           <ShieldCheck className="h-8 w-8" />
           <div className="mt-4 text-xl font-black">JWT roles</div>
-          <p className="mt-2 text-sm font-bold text-white/80">Admin, organizer, and contestant flows share one backend auth contract.</p>
+          <p className="mt-2 text-sm font-bold text-lemon/80">Admin, organizer, and contestant flows share one backend auth contract.</p>
         </Panel>
-        <Panel accent="bg-aqua">
+        <Panel accent="bg-aqua text-lemon">
           <UsersRound className="h-8 w-8" />
           <div className="mt-4 text-xl font-black">Contest rooms</div>
-          <p className="mt-2 text-sm font-bold text-ink/70">Registration, problem lists, and live scoreboards stay close together.</p>
+          <p className="mt-2 text-sm font-bold text-lemon/80">Registration, problem lists, and live scoreboards stay close together.</p>
         </Panel>
-        <Panel accent="bg-lemon">
+        <Panel accent="bg-panel">
           <Trophy className="h-8 w-8" />
           <div className="mt-4 text-xl font-black">Redis standings</div>
           <p className="mt-2 text-sm font-bold text-ink/70">Leaderboard screens poll the low-latency live endpoint during contests.</p>
