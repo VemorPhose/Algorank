@@ -37,6 +37,7 @@ services:
       JUDGE0_BASE_URL: http://judge0-server:2358
     command: >
       sh -c "alembic upgrade head &&
+             python scripts/seed_problems.py &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"

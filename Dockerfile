@@ -14,6 +14,7 @@ COPY app /app/app
 COPY migrations /app/migrations
 COPY alembic.ini /app/alembic.ini
 COPY scripts /app/scripts
+COPY algorank-problems /app/algorank-problems
 COPY tests /app/tests
 
 RUN pip install --no-cache-dir --upgrade pip \

@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUN_TESTS=1
 RUN_FRONTEND_BUILD=1
 RUN_DOCKER_BUILD=0
+RUN_SEED=0
 
 usage() {
   cat <<'EOF'
@@ -16,6 +17,7 @@ Options:
   --skip-tests             Install dependencies and build without running tests.
   --skip-frontend-build    Install frontend dependencies without building the frontend.
   --docker-build           Also run `docker compose build` after local verification.
+  --seed-problems          Run the DB seed script to populate problems (requires a running database).
   -h, --help               Show this help text.
 EOF
 }
@@ -43,6 +45,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     --docker-build)
       RUN_DOCKER_BUILD=1
+      ;;
+    --seed-problems)
+      RUN_SEED=1
       ;;
     -h | --help)
       usage
@@ -120,6 +125,14 @@ if [[ "$RUN_DOCKER_BUILD" -eq 1 ]]; then
   docker compose version >/dev/null 2>&1 || die "Docker Compose v2 is required."
   info "Building Docker images"
   docker compose build
+fi
+
+if [[ "$RUN_SEED" -eq 1 ]]; then
+  info "Seeding problems into the database"
+  "$VENV_PY" scripts/seed_problems.py || {
+    info "Seed script failed. Is the database running?"
+    info "  Start the stack first:  ./scripts/start-full-stack.sh --detached"
+  }
 fi
 
 info "Setup complete"

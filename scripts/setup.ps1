@@ -2,6 +2,7 @@ param(
     [switch]$SkipTests,
     [switch]$SkipFrontendBuild,
     [switch]$DockerBuild,
+    [switch]$SeedProblems,
     [switch]$Help
 )
 
@@ -20,6 +21,7 @@ Options:
   -SkipTests             Install dependencies and build without running tests.
   -SkipFrontendBuild     Install frontend dependencies without building the frontend.
   -DockerBuild           Also run 'docker compose build' after local verification.
+  -SeedProblems          Run the DB seed script to populate problems (requires a running database).
   -Help                  Show this help text.
 "@
 }
@@ -164,6 +166,17 @@ if ($DockerBuild) {
     Invoke-Checked "docker" @("compose", "version")
     Write-Step "Building Docker images"
     Invoke-Checked "docker" @("compose", "build")
+}
+
+if ($SeedProblems) {
+    Write-Step "Seeding problems into the database"
+    try {
+        Invoke-Checked $venvPython @("scripts/seed_problems.py")
+    }
+    catch {
+        Write-Step "Seed script failed. Is the database running?"
+        Write-Step "  Start the stack first:  .\scripts\start-full-stack.ps1 -Detached"
+    }
 }
 
 Write-Step "Setup complete"
